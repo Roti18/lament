@@ -4,13 +4,14 @@
 	import Player from '$lib/components/Player.svelte';
 	import Navigation from '$lib/components/Navigation.svelte';
 	import SearchModal from '$lib/components/SearchModal.svelte';
-	import { navigating } from '$app/state';
+	import { navigating } from '$app/stores';
+	import { fade } from 'svelte/transition';
 
 	let { children } = $props();
 </script>
 
-{#if navigating}
-	<div class="loading-bar"></div>
+{#if $navigating}
+	<div class="loading-bar" in:fade={{ duration: 100 }} out:fade={{ duration: 300 }}></div>
 {/if}
 
 <svelte:head>
