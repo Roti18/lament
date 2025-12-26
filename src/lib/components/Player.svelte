@@ -25,7 +25,7 @@
 </script>
 
 <div
-	class="glass transition-theme fixed right-0 bottom-[calc(var(--mobile-nav-bottom-total)-1px)] left-0 z-50 lg:bottom-0"
+	class="glass-nav transition-theme fixed right-0 bottom-[calc(var(--mobile-nav-bottom-total)-1px)] left-0 z-50 lg:bottom-0"
 	role="region"
 	aria-label="Audio player"
 >
