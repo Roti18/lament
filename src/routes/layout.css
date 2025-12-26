@@ -17,9 +17,9 @@
 	--spacing-lg: 1.5rem;
 	--spacing-xl: 2rem;
 
-	--spacing-player-height: 5rem;
-	--spacing-player-height-mobile: 6rem;
-	--spacing-nav-width: 5rem;
+	--mobile-nav-height: 4rem;
+	--mobile-nav-bottom-total: var(--mobile-nav-height);
+	--player-height-mobile: 6rem;
 
 	--transition-fast: 150ms;
 	--transition-normal: 300ms;
@@ -99,8 +99,10 @@
 	--color-error: var(--color-error);
 	--font-sans: var(--font-sans);
 	--spacing-player-height: var(--spacing-player-height);
-	--spacing-player-height-mobile: var(--spacing-player-height-mobile);
+	--spacing-player-height-mobile: var(--player-height-mobile);
 	--spacing-nav-width: var(--spacing-nav-width);
+	--spacing-mobile-nav: var(--mobile-nav-height);
+	--spacing-mobile-nav-total: var(--mobile-nav-bottom-total);
 	--transition-fast: var(--transition-fast);
 	--transition-normal: var(--transition-normal);
 	--transition-slow: var(--transition-slow);

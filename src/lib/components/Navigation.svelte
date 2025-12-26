@@ -45,7 +45,6 @@
 	};
 </script>
 
-<!-- Desktop Icon-Only Sidebar -->
 <nav
 	class="glass-nav transition-theme fixed top-0 left-0 z-40 hidden h-full w-20 flex-col items-center py-6 pb-24 lg:flex"
 	aria-label="Main navigation"
@@ -98,9 +97,8 @@
 	</div>
 </nav>
 
-<!-- Mobile Bottom Navigation -->
 <nav
-	class="glass-nav fixed right-0 bottom-0 left-0 z-40 flex h-[var(--mobile-nav-bottom-total)] items-center justify-around border-t border-surface-2/50 bg-surface-0/80 px-2 pb-[env(safe-area-inset-bottom,0px)] backdrop-blur-md lg:hidden"
+	class="glass-nav fixed right-0 bottom-0 left-0 z-40 flex h-mobile-nav-total items-center justify-around bg-surface-0 shadow-[0_-4px_24px_rgba(0,0,0,0.2)] backdrop-blur-xl lg:hidden"
 	aria-label="Mobile navigation"
 >
 	<!-- Home -->

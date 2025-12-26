@@ -17,7 +17,7 @@
 
 <Navigation />
 
-<main class="pt-4 lg:pb-24 lg:pl-24 min-h-screen pb-[calc(10rem+env(safe-area-inset-bottom,0px))]">
+<main class="pt-4 lg:pb-24 lg:pl-24 min-h-screen pb-[calc(var(--spacing-player-height-mobile)+var(--mobile-nav-bottom-total))]">
 	<div class="max-w-6xl px-4 lg:px-6 mx-auto">
 		{@render children()}
 	</div>
