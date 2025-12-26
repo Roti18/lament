@@ -38,6 +38,19 @@ let volume = $state(1);
 
 let lastTimeUpdate = 0;
 
+function updateMediaSession(track: Track): void {
+    if (!browser || !('mediaSession' in navigator)) return;
+
+    navigator.mediaSession.metadata = new MediaMetadata({
+        title: track.title,
+        artist: track.artists.map(a => a.name).join(', '),
+        album: track.album || '',
+        artwork: track.coverUrl ? [
+            { src: track.coverUrl, sizes: '512x512' }
+        ] : []
+    });
+}
+
 function initAudio(): void {
     if (audio || !browser) return;
 
@@ -62,14 +75,23 @@ function initAudio(): void {
     audio.addEventListener('playing', () => {
         isBuffering = false;
         isPlaying = true;
+        if ('mediaSession' in navigator) {
+            navigator.mediaSession.playbackState = 'playing';
+        }
     });
 
     audio.addEventListener('pause', () => {
         isPlaying = false;
+        if ('mediaSession' in navigator) {
+            navigator.mediaSession.playbackState = 'paused';
+        }
     });
 
     audio.addEventListener('ended', () => {
         isPlaying = false;
+        if ('mediaSession' in navigator) {
+            navigator.mediaSession.playbackState = 'paused';
+        }
 
         if (repeatMode === 'one') {
             seek(0);
@@ -107,6 +129,18 @@ function initAudio(): void {
         isPlaying = false;
         console.error('Audio playback error:', audio?.error);
     });
+
+    if ('mediaSession' in navigator) {
+        navigator.mediaSession.setActionHandler('play', () => play());
+        navigator.mediaSession.setActionHandler('pause', () => pause());
+        navigator.mediaSession.setActionHandler('previoustrack', () => previous());
+        navigator.mediaSession.setActionHandler('nexttrack', () => next());
+        navigator.mediaSession.setActionHandler('seekto', (details) => {
+            if (details.seekTime !== undefined) {
+                seek(details.seekTime);
+            }
+        });
+    }
 }
 
 function play(track?: Track): void {
@@ -117,6 +151,7 @@ function play(track?: Track): void {
         currentTrack = track;
         audio.src = track.audioUrl;
         audio.load();
+        updateMediaSession(track);
 
         const trackIndex = queue.findIndex((t) => t.id === track.id);
         if (trackIndex === -1) {
