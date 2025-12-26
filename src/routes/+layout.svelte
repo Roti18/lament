@@ -4,9 +4,14 @@
 	import Player from '$lib/components/Player.svelte';
 	import Navigation from '$lib/components/Navigation.svelte';
 	import SearchModal from '$lib/components/SearchModal.svelte';
+	import { navigating } from '$app/state';
 
 	let { children } = $props();
 </script>
+
+{#if navigating}
+	<div class="loading-bar"></div>
+{/if}
 
 <svelte:head>
 	<link rel="icon" href={favicon} />
@@ -17,8 +22,10 @@
 
 <Navigation />
 
-<main class="pt-4 lg:pb-24 lg:pl-24 min-h-screen pb-[calc(var(--spacing-player-height-mobile)+var(--mobile-nav-bottom-total))]">
-	<div class="max-w-6xl px-4 lg:px-6 mx-auto">
+<main
+	class="min-h-screen pt-4 pb-[calc(var(--spacing-player-height-mobile)+var(--mobile-nav-bottom-total))] lg:pb-24 lg:pl-24"
+>
+	<div class="mx-auto max-w-6xl px-4 lg:px-6">
 		{@render children()}
 	</div>
 </main>

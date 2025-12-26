@@ -204,6 +204,24 @@ h1, h2, h3, h4, h5, h6 {
 	animation: skeleton-pulse 1.8s ease-in-out infinite;
 }
 
+.loading-bar {
+	position: fixed;
+	top: 0;
+	left: 0;
+	height: 3px;
+	background: var(--color-accent);
+	z-index: 9999;
+	box-shadow: 0 0 8px var(--color-accent-glow);
+	transition: width 300ms ease-out;
+	animation: loading-progress 2s ease-in-out infinite;
+}
+
+@keyframes loading-progress {
+	0% { width: 0%; transform: translateX(0); }
+	50% { width: 70%; transform: translateX(15%); }
+	100% { width: 100%; transform: translateX(100%); }
+}
+
 .pb-player {
 	padding-bottom: calc(var(--spacing-player-height-mobile) + var(--spacing-md));
 }
