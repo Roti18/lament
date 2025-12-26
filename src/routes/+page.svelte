@@ -1,9 +1,3 @@
-<!--
-  Home / Discovery View
-  
-  UI-only demo page showing the layout structure.
-  Uses sample data for demonstration.
--->
 <script lang="ts">
 	import { player } from '$lib/stores/player.svelte';
 	import TrackCard from '$lib/components/TrackCard.svelte';
@@ -26,7 +20,6 @@
 </svelte:head>
 
 <div class="space-y-10 py-6">
-	<!-- Recently played / Quick picks -->
 	<section>
 		<div class="mb-4 flex items-center justify-between">
 			<h2 class="text-lg font-medium text-text-primary">Recently played</h2>
@@ -45,7 +38,6 @@
 		</div>
 	</section>
 
-	<!-- Albums section -->
 	<section>
 		<h2 class="mb-4 text-lg font-medium text-text-primary">Albums for you</h2>
 		<div class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
@@ -55,7 +47,6 @@
 		</div>
 	</section>
 
-	<!-- Artists section -->
 	<section>
 		<h2 class="mb-4 text-lg font-medium text-text-primary">Artists</h2>
 		<div class="grid grid-cols-3 gap-4 sm:grid-cols-4 md:grid-cols-6">

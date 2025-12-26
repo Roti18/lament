@@ -101,7 +101,6 @@
 	class="glass-nav fixed right-0 bottom-0 left-0 z-40 flex h-mobile-nav-total items-center justify-around bg-surface-0 shadow-[0_-4px_24px_rgba(0,0,0,0.2)] backdrop-blur-xl lg:hidden"
 	aria-label="Mobile navigation"
 >
-	<!-- Home -->
 	<a
 		href="/"
 		class="flex h-10 w-10 flex-col items-center justify-center rounded-xl transition-all {isActive(
@@ -114,7 +113,6 @@
 		<Home class="h-5 w-5" strokeWidth={isActive('/') ? 2.5 : 2} />
 	</a>
 
-	<!-- Tracks -->
 	<a
 		href="/tracks"
 		class="flex h-10 w-10 flex-col items-center justify-center rounded-xl transition-all {isActive(
@@ -127,7 +125,6 @@
 		<Music class="h-5 w-5" strokeWidth={isActive('/tracks') ? 2.5 : 2} />
 	</a>
 
-	<!-- Search -->
 	<a
 		href="/search"
 		class="flex h-10 w-10 flex-col items-center justify-center rounded-xl transition-all {isActive(
@@ -140,7 +137,6 @@
 		<Search class="h-5 w-5" strokeWidth={isActive('/search') ? 2.5 : 2} />
 	</a>
 
-	<!-- Albums -->
 	<a
 		href="/albums"
 		class="flex h-10 w-10 flex-col items-center justify-center rounded-xl transition-all {isActive(
@@ -153,7 +149,6 @@
 		<Disc class="h-5 w-5" strokeWidth={isActive('/albums') ? 2.5 : 2} />
 	</a>
 
-	<!-- Artists -->
 	<a
 		href="/artists"
 		class="flex h-10 w-10 flex-col items-center justify-center rounded-xl transition-all {isActive(

@@ -1,6 +1,3 @@
-<!--
-  Artist Detail View
--->
 <script lang="ts">
 	import { page } from '$app/state';
 	import { player } from '$lib/stores/player.svelte';
@@ -10,20 +7,6 @@
 
 	let { data } = $props();
 	let artist = $derived(data.artist);
-
-	// TODO: Fetch top tracks separately if not included in Artist object?
-	// The API client maps artist, but does it map top tracks?
-	// The `Artist` type in `types.ts` does NOT have `tracks` or `albums`.
-	// We might need to fetch `getArtistAlbums` or similar?
-	// The prompt only listed `GET /artists/:id`.
-	// If the API return includes them, we need to extend the type or use `any`.
-	// For now, let's assume `artist` object might have extended data or we just show empty if missing.
-
-	// Wait, internal `types.ts` Artist DOES NOT have tracks.
-	// But the UI needs `topTracks` and `albums`.
-	// API `GET /artists/:id` might return them.
-	// I'll update `types.ts` if needed or just use `any` casting in the template if I'm lazy, but better to update types.
-	// I'll assume they come with the artist for now, or Mock them empty to prevent crash.
 
 	let topTracks = $derived(artist.tracks || []);
 	let albums = $derived(artist.albums || []);
@@ -40,11 +23,9 @@
 </svelte:head>
 
 <div class="py-6">
-	<!-- Artist header -->
 	<header
 		class="mb-8 flex flex-col items-center gap-6 text-center md:flex-row md:items-end md:text-left"
 	>
-		<!-- Image -->
 		<div
 			class="h-40 w-40 flex-shrink-0 overflow-hidden rounded-full bg-surface-2 shadow-xl md:h-48 md:w-48"
 		>
@@ -57,7 +38,6 @@
 			{/if}
 		</div>
 
-		<!-- Info -->
 		<div>
 			<p class="text-xs font-medium tracking-wider text-text-muted uppercase">Artist</p>
 			<h1 class="mt-1 text-lg font-bold text-text-primary md:text-4xl">{artist.name}</h1>
@@ -76,7 +56,6 @@
 		</div>
 	</header>
 
-	<!-- Top tracks -->
 	<section class="mb-10">
 		<h2 class="mb-4 text-lg font-medium text-text-primary">Popular tracks</h2>
 		<div class="space-y-1">
@@ -86,7 +65,6 @@
 		</div>
 	</section>
 
-	<!-- Albums -->
 	<section>
 		<h2 class="mb-4 text-lg font-medium text-text-primary">Albums</h2>
 		<div class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">

@@ -1,6 +1,3 @@
-<!--
-  Album Detail View
--->
 <script lang="ts">
 	import { page } from '$app/state';
 	import { player } from '$lib/stores/player.svelte';
@@ -9,7 +6,7 @@
 	import { Play, Disc } from '@lucide/svelte';
 
 	let { data } = $props();
-	// Need to handle potential null if error not thrown (though load throws)
+
 	let album = $derived(data.album);
 
 	const totalDuration = $derived(album.tracks?.reduce((acc, t) => acc + t.duration, 0) || 0);
@@ -29,9 +26,7 @@
 </svelte:head>
 
 <div class="py-6">
-	<!-- Album header -->
 	<header class="mb-8 flex flex-col gap-6 md:flex-row md:items-end">
-		<!-- Artwork -->
 		<div class="mx-auto w-48 flex-shrink-0 md:mx-0 md:w-56">
 			<div
 				class="flex aspect-square items-center justify-center overflow-hidden rounded-lg bg-surface-2 shadow-xl"
@@ -44,7 +39,6 @@
 			</div>
 		</div>
 
-		<!-- Info -->
 		<div class="text-center md:text-left">
 			<p class="text-xs font-medium tracking-wider text-text-muted uppercase">Album</p>
 			<h1 class="mt-1 text-lg font-bold text-text-primary md:text-4xl">{album.title}</h1>
@@ -70,7 +64,6 @@
 		</div>
 	</header>
 
-	<!-- Track list -->
 	<section>
 		<div class="space-y-1">
 			{#each album.tracks as track, i}

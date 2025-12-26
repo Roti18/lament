@@ -1,14 +1,7 @@
-<!--
-  User Profile Page
-  
-  Displays individual user information in a calm, minimal layout.
-  Typography-driven hierarchy, spacing-based sections.
--->
 <script lang="ts">
 	import { page } from '$app/state';
 	import type { User, Playlist } from '$lib/types';
 
-	// Sample user data
 	const user: User = {
 		id: page.params.id ?? 'u1',
 		displayName: 'Aurora Listener',
@@ -21,7 +14,6 @@
 		}
 	};
 
-	// Sample user playlists
 	const userPlaylists: Playlist[] = [
 		{
 			id: 'p1',
@@ -40,7 +32,6 @@
 		}
 	];
 
-	// Placeholder avatar
 	const placeholderAvatar = (name: string) => {
 		const initials = name
 			.split(' ')
@@ -55,7 +46,6 @@
 		`)}`;
 	};
 
-	// Playlist placeholder
 	const playlistPlaceholder =
 		'data:image/svg+xml,' +
 		encodeURIComponent(`
@@ -78,11 +68,9 @@
 </svelte:head>
 
 <div class="py-6">
-	<!-- Profile header -->
 	<header
 		class="mb-12 flex flex-col items-center text-center md:flex-row md:items-start md:text-left"
 	>
-		<!-- Avatar -->
 		<div
 			class="mb-6 h-32 w-32 flex-shrink-0 overflow-hidden rounded-full bg-surface-2 md:mr-8 md:mb-0 md:h-40 md:w-40"
 		>
@@ -93,7 +81,6 @@
 			/>
 		</div>
 
-		<!-- Info -->
 		<div class="flex-1">
 			<h1 class="text-lg font-semibold text-text-primary md:text-3xl">{user.displayName}</h1>
 			<p class="mt-1 text-text-muted">{user.username}</p>
@@ -102,7 +89,6 @@
 				<p class="mt-4 max-w-lg text-text-secondary">{user.bio}</p>
 			{/if}
 
-			<!-- Stats -->
 			{#if user.stats}
 				<div class="mt-6 flex justify-center gap-8 md:justify-start">
 					{#if user.stats.playlistCount !== undefined}
@@ -130,7 +116,6 @@
 				</div>
 			{/if}
 
-			<!-- Action buttons -->
 			<div class="mt-6 flex justify-center gap-3 md:justify-start">
 				<button
 					class="rounded-full bg-accent px-5 py-2 text-sm font-medium text-surface-0 transition-opacity hover:opacity-90"
@@ -146,7 +131,6 @@
 		</div>
 	</header>
 
-	<!-- User playlists section -->
 	<section>
 		<h2 class="mb-4 text-lg font-medium text-text-primary">Playlists</h2>
 
@@ -157,7 +141,6 @@
 						href="/playlist/{playlist.id}"
 						class="group flex items-center gap-4 rounded-lg p-3 transition-colors hover:bg-surface-1"
 					>
-						<!-- Playlist cover -->
 						<div class="h-12 w-12 flex-shrink-0 overflow-hidden rounded bg-surface-2">
 							<img
 								src={playlist.coverThumb || playlistPlaceholder}
@@ -167,7 +150,6 @@
 							/>
 						</div>
 
-						<!-- Playlist info -->
 						<div class="min-w-0 flex-1">
 							<h3 class="truncate font-medium text-text-primary group-hover:text-accent">
 								{playlist.title}

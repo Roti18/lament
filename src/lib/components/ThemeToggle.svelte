@@ -1,6 +1,3 @@
-<!--
-  ThemeToggle - Sun/moon toggle for dark/light theme
--->
 <script lang="ts">
 	import { theme } from '$lib/stores/theme.svelte';
 	import { Sun, Moon } from '@lucide/svelte';

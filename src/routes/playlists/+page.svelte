@@ -1,13 +1,9 @@
-<!--
-  Playlists Listing View
--->
 <script lang="ts">
 	import type { Playlist } from '$lib/types';
 
 	let { data } = $props();
 	let playlists = $derived(data.playlists);
 
-	// Placeholder artwork
 	const placeholderArt =
 		'data:image/svg+xml,' +
 		encodeURIComponent(`

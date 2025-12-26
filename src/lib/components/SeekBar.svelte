@@ -35,7 +35,6 @@
 	</span>
 
 	<div class="relative flex-1">
-		<!-- Progress track (filled portion) -->
 		<div
 			class="pointer-events-none absolute top-1/2 left-0 h-1 -translate-y-1/2 rounded-full bg-accent shadow-[0_0_8px_var(--color-accent-glow)]"
 			style="width: {progress}%"

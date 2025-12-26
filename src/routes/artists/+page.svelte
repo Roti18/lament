@@ -1,6 +1,3 @@
-<!--
-  Artists Listing View
--->
 <script lang="ts">
 	import ArtistCard from '$lib/components/ArtistCard.svelte';
 

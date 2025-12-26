@@ -1,8 +1,3 @@
-<!--
-  Tracks Listing View
-  
-  All tracks in a scrollable list
--->
 <script lang="ts">
 	import { player } from '$lib/stores/player.svelte';
 	import TrackCard from '$lib/components/TrackCard.svelte';
@@ -26,7 +21,6 @@
 </svelte:head>
 
 <div class="py-6">
-	<!-- Header -->
 	<header class="mb-6 flex items-end justify-between">
 		<div>
 			<h1 class="text-lg font-semibold text-text-primary">Tracks</h1>
@@ -50,7 +44,6 @@
 		</div>
 	</header>
 
-	<!-- Track list -->
 	<div class="space-y-1">
 		{#each tracks as track, i}
 			<TrackCard {track} index={i} showIndex />

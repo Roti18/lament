@@ -41,7 +41,6 @@
 	</button>
 
 	<div class="relative w-20">
-		<!-- Progress track (filled portion) -->
 		<div
 			class="pointer-events-none absolute top-1/2 left-0 h-0.5 -translate-y-1/2 rounded-full bg-accent"
 			style="width: {player.volume * 100}%"

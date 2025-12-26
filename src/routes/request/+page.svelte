@@ -1,7 +1,3 @@
-<!--
-  Request Song - Frontend-only request form
-  Manual processing workflow. No backend.
--->
 <script lang="ts">
 	import { fade, fly } from 'svelte/transition';
 	import { Check, X, ArrowRight, ArrowLeft, Send, Home } from '@lucide/svelte';
@@ -20,8 +16,7 @@
 
 	function handleSubmit(e: Event) {
 		e.preventDefault();
-		// Mock submission - just show success
-		// In a real scenario, this might copy to clipboard or email
+
 		setTimeout(() => {
 			step = 'success';
 		}, 500);

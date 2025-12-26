@@ -1,6 +1,3 @@
-<!--
-  Albums Listing View
--->
 <script lang="ts">
 	import AlbumCard from '$lib/components/AlbumCard.svelte';
 
