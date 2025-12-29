@@ -3,6 +3,7 @@
 	import SeekBar from './SeekBar.svelte';
 	import VolumeControl from './VolumeControl.svelte';
 	import TrackInfo from './TrackInfo.svelte';
+	import Lyrics from './Lyrics.svelte';
 	import {
 		Play,
 		Pause,
@@ -11,18 +12,25 @@
 		Loader2,
 		Shuffle,
 		Repeat,
-		Repeat1
+		Repeat1,
+		Mic2
 	} from '@lucide/svelte';
 
 	$effect(() => {
 		player.init();
 	});
 
+	let showLyrics = $state(false);
+
 	function getRepeatIcon() {
 		if (player.repeatMode === 'one') return Repeat1;
 		return Repeat;
 	}
 </script>
+
+{#if showLyrics}
+	<Lyrics onClose={() => (showLyrics = false)} />
+{/if}
 
 <div
 	class="glass-nav transition-theme fixed right-0 bottom-[calc(var(--mobile-nav-bottom-total)-1px)] left-0 z-50 lg:bottom-0"
@@ -38,6 +46,16 @@
 			<TrackInfo />
 
 			<div class="flex items-center gap-1">
+				<button
+					onclick={() => (showLyrics = !showLyrics)}
+					class="interactive flex h-9 w-9 items-center justify-center transition-colors {showLyrics
+						? 'text-accent'
+						: 'text-text-secondary hover:text-text-primary'}"
+					aria-label="Toggle Lyrics"
+				>
+					<Mic2 class="h-4 w-4" />
+				</button>
+
 				<button
 					onclick={() => player.toggleShuffle()}
 					class="interactive flex h-9 w-9 items-center justify-center transition-colors {player.shuffleEnabled
@@ -177,7 +195,16 @@
 				</div>
 			</div>
 
-			<div class="flex justify-end pr-2">
+			<div class="flex items-center justify-end gap-2 pr-2">
+				<button
+					onclick={() => (showLyrics = !showLyrics)}
+					class="interactive flex h-8 w-8 items-center justify-center transition-colors {showLyrics
+						? 'text-accent'
+						: 'text-text-secondary hover:text-text-primary'}"
+					aria-label="Toggle Lyrics"
+				>
+					<Mic2 class="h-4 w-4" />
+				</button>
 				<VolumeControl />
 			</div>
 		</div>
