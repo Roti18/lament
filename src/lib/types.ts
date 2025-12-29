@@ -69,6 +69,28 @@ export interface PlayerState {
 
 export type RepeatMode = 'off' | 'all' | 'one';
 
+export interface LyricLine {
+	t: number;
+	text: string;
+	tokens?: { text: string; highlight?: boolean }[];
+}
+
+// export interface LyricsResponse {
+// 	track_id: string;
+// 	variant: string;
+// 	lines: LyricLine[];
+// }
+
+export interface Lyric {
+	id: string;
+	track_id: string;
+	language: string;
+	variant: string;
+	lines: LyricLine[]; // Changed from content string
+	created_at: string;
+}
+
+
 export interface SearchResult {
 	artists: Artist[];
 	albums: Album[];
