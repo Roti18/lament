@@ -3,8 +3,8 @@
 	import { Music } from '@lucide/svelte';
 </script>
 
-<div class="min-w-0 gap-3 flex items-center">
-	<div class="h-10 w-10 rounded md:h-12 md:w-12 flex-shrink-0 overflow-hidden bg-surface-2">
+<div class="flex min-w-0 items-center gap-2">
+	<div class="h-10 w-10 flex-shrink-0 overflow-hidden rounded bg-surface-2 md:h-12 md:w-12">
 		{#if player.currentTrack?.coverUrl}
 			<img
 				src={player.currentTrack.coverUrl}
@@ -21,10 +21,10 @@
 
 	<div class="min-w-0 flex-1">
 		{#if player.currentTrack}
-			<p class="text-sm font-medium truncate text-text-primary">
+			<p class="truncate text-base font-medium text-text-primary">
 				{player.currentTrack.title}
 			</p>
-			<p class="text-xs truncate text-text-secondary">
+			<p class="truncate text-xs text-text-secondary">
 				{#each player.currentTrack.artists as artist, i}
 					<a href="/artist/{artist.id}" class="hover:text-accent hover:underline">
 						{artist.name}
