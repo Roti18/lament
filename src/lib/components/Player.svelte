@@ -45,10 +45,10 @@
 		<div class="flex items-center justify-between">
 			<TrackInfo />
 
-			<div class="flex items-center gap-1">
+			<div class="flex items-center gap-0">
 				<button
 					onclick={() => (showLyrics = !showLyrics)}
-					class="interactive flex h-9 w-9 items-center justify-center transition-colors {showLyrics
+					class="interactive hidden h-8 w-8 items-center justify-center transition-colors md:flex {showLyrics
 						? 'text-accent'
 						: 'text-text-secondary hover:text-text-primary'}"
 					aria-label="Toggle Lyrics"
@@ -58,18 +58,18 @@
 
 				<button
 					onclick={() => player.toggleShuffle()}
-					class="interactive flex h-9 w-9 items-center justify-center transition-colors {player.shuffleEnabled
+					class="interactive flex h-8 w-8 items-center justify-center transition-colors {player.shuffleEnabled
 						? 'text-accent'
 						: 'text-text-secondary hover:text-text-primary'}"
 					aria-label="Toggle shuffle"
 				>
-					<Shuffle class="h-4 w-4" />
+					<Shuffle class="h-3.5 w-3.5" />
 				</button>
 
 				<button
 					onclick={() => player.previous()}
 					disabled={player.queue.length === 0}
-					class="interactive flex h-9 w-9 items-center justify-center text-text-secondary hover:text-text-primary disabled:opacity-40"
+					class="interactive flex h-8 w-8 items-center justify-center text-text-secondary hover:text-text-primary disabled:opacity-40"
 					aria-label="Previous track"
 				>
 					<SkipBack class="h-4 w-4" fill="currentColor" />
@@ -78,7 +78,7 @@
 				<button
 					onclick={() => player.toggle()}
 					disabled={!player.currentTrack}
-					class="interactive flex h-11 w-11 items-center justify-center rounded-full bg-accent text-surface-0 hover:bg-accent-hover disabled:opacity-40"
+					class="interactive flex h-10 w-10 items-center justify-center rounded-full bg-accent text-surface-0 hover:bg-accent-hover disabled:opacity-40"
 					aria-label={player.isPlaying ? 'Pause' : 'Play'}
 				>
 					{#if player.isBuffering}
@@ -93,7 +93,7 @@
 				<button
 					onclick={() => player.next()}
 					disabled={player.queueIndex >= player.queue.length - 1 && player.repeatMode !== 'all'}
-					class="interactive flex h-9 w-9 items-center justify-center text-text-secondary hover:text-text-primary disabled:opacity-40"
+					class="interactive flex h-8 w-8 items-center justify-center text-text-secondary hover:text-text-primary disabled:opacity-40"
 					aria-label="Next track"
 				>
 					<SkipForward class="h-4 w-4" fill="currentColor" />
@@ -105,16 +105,16 @@
 						const current = modes.indexOf(player.repeatMode);
 						player.setRepeatMode(modes[(current + 1) % modes.length]);
 					}}
-					class="interactive flex h-9 w-9 items-center justify-center transition-colors {player.repeatMode !==
+					class="interactive flex h-8 w-8 items-center justify-center transition-colors {player.repeatMode !==
 					'off'
 						? 'text-accent'
 						: 'text-text-secondary hover:text-text-primary'}"
 					aria-label="Change repeat mode"
 				>
 					{#if player.repeatMode === 'one'}
-						<Repeat1 class="h-4 w-4" />
+						<Repeat1 class="h-3.5 w-3.5" />
 					{:else}
-						<Repeat class="h-4 w-4" />
+						<Repeat class="h-3.5 w-3.5" />
 					{/if}
 				</button>
 			</div>
