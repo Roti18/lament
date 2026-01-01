@@ -17,11 +17,7 @@
 	let scrollTimeout: any;
 	let containerRef: HTMLDivElement;
 
-	// Variant State
-	let currentVariant = $state('original');
-	let variants = ['original', 'romanized', 'translated'];
-
-	async function fetchLyrics(trackId: string, variant: string) {
+	async function fetchLyrics(trackId: string) {
 		if (!browser) return;
 		loading = true;
 		error = null;
@@ -29,20 +25,17 @@
 		activeLineIndex = -1;
 
 		try {
-			// Fetch specific variant via BFF
-			const res = await fetch(`/api/lyrics/${trackId}?variant=${variant}`);
+			// Fetch specific variant via BFF (always original)
+			const res = await fetch(`/api/lyrics/${trackId}?variant=original`);
 			if (!res.ok) throw new Error('Failed to fetch lyrics');
 
 			const data = await res.json();
-			
+
 			// New structure: { variant, lines, synced }
 			if (data && Array.isArray(data.lines)) {
 				lines = data.lines;
 				isSynced = !!data.synced;
-				if (data.variant && data.variant !== 'none') {
-					currentVariant = data.variant;
-				}
-				
+
 				if (lines.length === 0) {
 					error = 'Lyrics not available';
 				}
@@ -66,19 +59,9 @@
 		const trackId = player.currentTrack?.id;
 		if (browser && trackId && trackId !== lastFetchedId) {
 			lastFetchedId = trackId;
-			// Only fetch when track changes, use untrack for currentVariant
-			// so that changing variant doesn't trigger this effect (handled by changeVariant)
-			fetchLyrics(trackId, currentVariant);
+			fetchLyrics(trackId);
 		}
 	});
-
-	function changeVariant(variant: string) {
-		if (currentVariant === variant || loading) return;
-		currentVariant = variant;
-		if (player.currentTrack?.id) {
-			fetchLyrics(player.currentTrack.id, variant);
-		}
-	}
 
 	// Sync Logic (Core)
 	$effect(() => {
@@ -161,21 +144,6 @@
 				>
 			</div>
 		</div>
-
-		<!-- Variant Switcher -->
-		<div class="flex gap-1 rounded-full bg-black/40 p-1 backdrop-blur-sm">
-			{#each variants as variant}
-				<button
-					class="rounded-full px-3 py-1 text-xs font-bold uppercase transition-colors {currentVariant ===
-					variant
-						? 'bg-white text-black'
-						: 'text-white/60 hover:text-white'}"
-					onclick={() => changeVariant(variant)}
-				>
-					{variant}
-				</button>
-			{/each}
-		</div>
 	</div>
 
 	<!-- Content -->
@@ -192,9 +160,6 @@
 			<div class="flex h-full flex-col items-center justify-center gap-4 text-white/50">
 				<Music2 class="h-16 w-16 opacity-20" />
 				<p class="text-xl font-medium">{error || 'Lyrics not available for this track'}</p>
-				{#if error !== 'Lyrics not available'}
-					<p class="text-sm opacity-60">Try switching to a different variant</p>
-				{/if}
 			</div>
 		{:else}
 			<div class="flex flex-col gap-4 pb-[50vh] md:gap-6">
@@ -202,10 +167,10 @@
 					<button
 						id="lyric-line-{i}"
 						class="block w-full origin-center py-2 text-xl font-bold transition-all duration-500 outline-none md:text-3xl
-                        {isSynced 
-							? (i === activeLineIndex
+                        {isSynced
+							? i === activeLineIndex
 								? 'scale-105 text-white opacity-100 blur-none'
-								: 'text-white/60 opacity-40 blur-[1px] hover:opacity-80 hover:blur-none')
+								: 'text-white/60 opacity-40 blur-[1px] hover:opacity-80 hover:blur-none'
 							: 'text-white opacity-90 hover:opacity-100'}
                         "
 						onclick={() => {
