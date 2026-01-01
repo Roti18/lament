@@ -37,8 +37,8 @@
 	role="region"
 	aria-label="Audio player"
 >
-	<div class="flex flex-col px-4 py-2.5 md:hidden">
-		<div class="-mx-4 mb-2 px-4">
+	<div class="flex flex-col px-3 py-2.5 md:hidden">
+		<div class="-mx-3 mb-2 px-3">
 			<SeekBar />
 		</div>
 
