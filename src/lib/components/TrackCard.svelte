@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { player } from '$lib/stores/player.svelte';
 	import type { Track } from '$lib/types';
-	import { Play, Pause, Music } from '@lucide/svelte';
+	import { Play, Pause, Music, ListPlus } from '@lucide/svelte';
+	import AddToPlaylistModal from '$lib/components/ui/AddToPlaylistModal.svelte';
+	import { auth } from '$lib/stores/auth.svelte';
 
 	interface Props {
 		track: Track;
@@ -13,6 +15,7 @@
 
 	let isCurrentTrack = $derived(player.currentTrack?.id === track.id);
 	let isPlaying = $derived(isCurrentTrack && player.isPlaying);
+	let modalOpen = $state(false);
 
 	function handleClick() {
 		if (isCurrentTrack) {
@@ -27,16 +30,24 @@
 		const secs = Math.floor(seconds % 60);
 		return `${mins}:${secs.toString().padStart(2, '0')}`;
 	}
+
+	function openAddToPlaylist(e: Event) {
+		e.stopPropagation();
+		modalOpen = true;
+	}
 </script>
 
-<button
+<div
+	role="button"
+	tabindex="0"
 	onclick={handleClick}
-	class="group flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left transition-colors hover:bg-surface-1 {isCurrentTrack
+	onkeydown={(e) => e.key === 'Enter' && handleClick()}
+	class="group flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2 transition-colors hover:bg-surface-1 {isCurrentTrack
 		? 'bg-surface-1'
 		: ''}"
 >
 	{#if showIndex}
-		<div class="w-6 text-center text-sm text-text-muted tabular-nums">
+		<div class="w-6 flex-shrink-0 text-center text-sm text-text-muted tabular-nums">
 			{#if isPlaying}
 				<span class="inline-flex gap-0.5">
 					<span class="h-3 w-0.5 animate-pulse rounded-full bg-accent"></span>
@@ -76,24 +87,40 @@
 	</div>
 
 	<div class="min-w-0 flex-1">
-		<p class="truncate text-sm font-medium {isCurrentTrack ? 'text-accent' : 'text-text-primary'}">
+		<p
+			class="truncate text-left text-sm font-medium {isCurrentTrack
+				? 'text-accent'
+				: 'text-text-primary'}"
+		>
 			{track.title}
 		</p>
-		<p class="truncate text-xs text-text-secondary">
-			{#each track.artists as artist, i}
-				<a
-					href="/artist/{artist.id}"
-					class="hover:text-accent hover:underline"
-					onclick={(e) => e.stopPropagation()}
-				>
-					{artist.name}
-				</a>
-				{#if i < track.artists.length - 1}
-					<span class="text-text-muted">, </span>
-				{/if}
-			{/each}
+		<p class="truncate text-left text-xs text-text-secondary">
+			{#if track.artists && track.artists.length > 0}
+				{#each track.artists as artist, i}
+					<span class="hover:text-accent">{artist.name}</span>
+					{#if i < track.artists.length - 1}
+						<span class="text-text-muted">, </span>
+					{/if}
+				{/each}
+			{:else}
+				<span class="text-text-muted">Unknown Artist</span>
+			{/if}
 		</p>
 	</div>
 
-	<span class="text-xs text-text-muted tabular-nums">{formatDuration(track.duration)}</span>
-</button>
+	<span class="flex-shrink-0 text-xs text-text-muted tabular-nums"
+		>{formatDuration(track.duration)}</span
+	>
+
+	{#if auth.user}
+		<button
+			onclick={openAddToPlaylist}
+			class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-text-muted transition-all hover:bg-surface-2 hover:text-accent"
+			aria-label="Add to playlist"
+		>
+			<ListPlus class="h-4 w-4" />
+		</button>
+	{/if}
+</div>
+
+<AddToPlaylistModal bind:open={modalOpen} {track} />
