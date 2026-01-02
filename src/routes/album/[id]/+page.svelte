@@ -1,12 +1,9 @@
 <script lang="ts">
-	import { page } from '$app/state';
 	import { player } from '$lib/stores/player.svelte';
 	import TrackCard from '$lib/components/TrackCard.svelte';
-	import type { Album, Track } from '$lib/types';
-	import { Play, Disc } from '@lucide/svelte';
+	import MediaHeader from '$lib/components/MediaHeader.svelte';
 
 	let { data } = $props();
-
 	let album = $derived(data.album);
 
 	const totalDuration = $derived(album.tracks?.reduce((acc, t) => acc + t.duration, 0) || 0);
@@ -19,50 +16,36 @@
 	function playAll() {
 		player.setQueue(album.tracks, 0);
 	}
+
+	function shufflePlay() {
+		const shuffled = [...album.tracks].sort(() => Math.random() - 0.5);
+		player.setQueue(shuffled, 0);
+	}
 </script>
 
 <svelte:head>
 	<title>{album.title} | lament</title>
 </svelte:head>
 
-<div class="py-6">
-	<header class="mb-8 flex flex-col gap-6 md:flex-row md:items-end">
-		<div class="mx-auto w-48 flex-shrink-0 md:mx-0 md:w-56">
-			<div
-				class="flex aspect-square items-center justify-center overflow-hidden rounded-lg bg-surface-2 shadow-xl"
-			>
-				{#if album.coverUrl}
-					<img src={album.coverUrl} alt={album.title} class="h-full w-full object-cover" />
-				{:else}
-					<Disc class="h-24 w-24 text-text-muted opacity-50" strokeWidth={1} />
-				{/if}
-			</div>
-		</div>
-
-		<div class="text-center md:text-left">
-			<p class="text-xs font-medium tracking-wider text-text-muted uppercase">Album</p>
-			<h1 class="mt-1 text-lg font-bold text-text-primary md:text-4xl">{album.title}</h1>
-			<p class="mt-2 text-text-secondary">
-				<a href="/artist/{album.artistId}" class="hover:text-accent hover:underline"
-					>{album.artist}</a
-				>
-				<span class="text-text-muted">
-					· {album.releaseYear} · {album.tracks.length} tracks · {formatTotalDuration(
-						totalDuration
-					)}</span
-				>
+<div class="py-4 md:py-6">
+	<MediaHeader
+		type="album"
+		title={album.title}
+		coverUrl={album.coverUrl}
+		onPlay={playAll}
+		onShuffle={shufflePlay}
+	>
+		{#snippet subtitle()}
+			<p class="text-xs text-text-secondary md:text-base">
+				<a href="/artist/{album.artistId}" class="hover:text-accent hover:underline">
+					{album.artist}
+				</a>
 			</p>
-			<div class="mt-4 flex justify-center gap-3 md:justify-start">
-				<button
-					onclick={playAll}
-					class="flex h-10 w-10 items-center justify-center rounded-full bg-accent text-surface-0 transition-opacity hover:opacity-90"
-					aria-label="Play all"
-				>
-					<Play class="h-5 w-5 fill-current" />
-				</button>
-			</div>
-		</div>
-	</header>
+		{/snippet}
+		{#snippet meta()}
+			{album.releaseYear} · {album.tracks.length} tracks · {formatTotalDuration(totalDuration)}
+		{/snippet}
+	</MediaHeader>
 
 	<section>
 		<div class="space-y-1">
