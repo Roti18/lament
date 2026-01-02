@@ -1,31 +1,30 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import ThemeToggle from './ThemeToggle.svelte';
-	import {
-		Home,
-		Music,
-		Disc,
-		User,
-		ListMusic,
-		Users,
-		MessageSquarePlus,
-		Search
-	} from '@lucide/svelte';
-	import { fade, fly } from 'svelte/transition';
+	import { Home, Music, Disc, User, ListMusic, MessageSquarePlus, Search } from '@lucide/svelte';
+	import { auth } from '$lib/stores/auth.svelte';
+
+	$effect(() => {
+		auth.init();
+	});
 
 	interface NavItem {
 		href: string;
 		label: string;
-		icon: 'home' | 'music' | 'album' | 'artist' | 'playlist' | 'users' | 'request' | 'search';
+		icon: 'home' | 'music' | 'album' | 'playlist' | 'users' | 'request' | 'search';
 	}
 
-	const navItems: NavItem[] = [
+	const navItems = $derived([
 		{ href: '/', label: 'Home', icon: 'home' },
 		{ href: '/tracks', label: 'Tracks', icon: 'music' },
 		{ href: '/search', label: 'Search', icon: 'search' },
 		{ href: '/albums', label: 'Albums', icon: 'album' },
-		{ href: '/artists', label: 'Artists', icon: 'artist' }
-	];
+		{
+			href: auth.user ? '/profile' : '/login',
+			label: auth.user ? 'Profile' : 'Login',
+			icon: 'user'
+		}
+	]);
 
 	function isActive(href: string): boolean {
 		if (href === '/') return page.url.pathname === '/';
@@ -33,14 +32,13 @@
 		return page.url.pathname.startsWith(href);
 	}
 
-	const iconMap = {
+	const iconMap: Record<string, any> = {
 		home: Home,
 		search: Search,
 		music: Music,
 		album: Disc,
-		artist: User,
 		playlist: ListMusic,
-		users: Users,
+		user: User,
 		request: MessageSquarePlus
 	};
 </script>
@@ -51,7 +49,8 @@
 >
 	<a
 		href="/"
-		class="mb-10 flex h-10 w-10 items-center justify-center rounded-lg bg-accent text-lg font-bold text-black transition-transform hover:scale-105"
+		class="mb-10 flex h-12 w-12 items-center justify-center text-4xl font-bold tracking-tight text-accent italic transition-transform hover:scale-105"
+		style="font-family: 'Cormorant Garamond', serif;"
 	>
 		L
 	</a>
@@ -69,7 +68,15 @@
 						: 'text-text-secondary hover:bg-surface-1 hover:text-text-primary'}"
 					aria-label={item.label}
 				>
-					<Icon class="h-5 w-5" strokeWidth={isActive(item.href) ? 2 : 1.5} />
+					{#if item.icon === 'user' && auth.user && (auth.user.avatar_url || auth.user.avatarUrl)}
+						<img
+							src={auth.user.avatar_url || auth.user.avatarUrl}
+							alt={auth.user.username}
+							class="h-6 w-6 rounded-full object-cover"
+						/>
+					{:else}
+						<Icon class="h-5 w-5" strokeWidth={isActive(item.href) ? 2 : 1.5} />
+					{/if}
 
 					<span
 						class="absolute left-14 hidden rounded-md bg-surface-3 px-2 py-1 text-xs font-medium whitespace-nowrap text-text-primary opacity-0 shadow-sm transition-opacity group-hover:block group-hover:opacity-100"
@@ -150,14 +157,34 @@
 	</a>
 
 	<a
-		href="/artists"
+		href="/request"
 		class="flex h-10 w-10 flex-col items-center justify-center rounded-xl transition-all {isActive(
-			'/artists'
+			'/request'
 		)
 			? 'text-accent'
 			: 'text-text-secondary active:scale-95'}"
-		aria-label="Artists"
+		aria-label="Request"
 	>
-		<User class="h-5 w-5" strokeWidth={isActive('/artists') ? 2.5 : 2} />
+		<MessageSquarePlus class="h-5 w-5" strokeWidth={isActive('/request') ? 2.5 : 2} />
+	</a>
+
+	<a
+		href={auth.user ? '/profile' : '/login'}
+		class="flex h-10 w-10 flex-col items-center justify-center rounded-xl transition-all {isActive(
+			'/profile'
+		) || isActive('/login')
+			? 'text-accent'
+			: 'text-text-secondary active:scale-95'}"
+		aria-label="Account"
+	>
+		{#if auth.user && (auth.user.avatar_url || auth.user.avatarUrl)}
+			<img
+				src={auth.user.avatar_url || auth.user.avatarUrl}
+				alt="Me"
+				class="h-5 w-5 rounded-full object-cover"
+			/>
+		{:else}
+			<User class="h-5 w-5" strokeWidth={isActive('/profile') || isActive('/login') ? 2.5 : 2} />
+		{/if}
 	</a>
 </nav>
