@@ -1,13 +1,11 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import { encodeBase64url } from '@oslojs/encoding';
+import type { User } from '$lib/types';
 const DAY_IN_MS = 1000 * 60 * 60 * 24;
 
 export const sessionCookieName = 'auth-session';
 
-export interface User {
-	id: string;
-	username: string;
-}
+// User interface is imported from $lib/types
 
 export interface Session {
 	id: string;
