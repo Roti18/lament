@@ -4,6 +4,7 @@
 	import AlbumCard from '$lib/components/AlbumCard.svelte';
 	import ArtistCard from '$lib/components/ArtistCard.svelte';
 	import { Play } from '@lucide/svelte';
+	import Button from '$lib/components/ui/Button.svelte';
 
 	let { data } = $props();
 	let sampleTracks = $derived(data.recentTracks);
@@ -23,13 +24,15 @@
 	<section>
 		<div class="mb-4 flex items-center justify-between">
 			<h2 class="text-lg font-medium text-text-primary">Recently played</h2>
-			<button
+			<Button
+				variant="secondary"
+				size="icon"
+				class="rounded-full border-none bg-accent/10 text-accent hover:bg-accent/20"
 				onclick={playAll}
-				class="flex h-8 w-8 items-center justify-center rounded-full bg-accent/10 text-accent transition-colors hover:bg-accent/20"
 				aria-label="Play all"
 			>
 				<Play class="h-4 w-4 fill-current" />
-			</button>
+			</Button>
 		</div>
 		<div class="space-y-1">
 			{#each sampleTracks.slice(0, 5) as track, i}
