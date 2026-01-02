@@ -39,13 +39,29 @@ export interface Playlist {
 	coverThumb?: string;
 	trackCount: number;
 	tracks: Track[];
+	owner_id?: string;
+}
+
+export interface PlaylistTrack {
+	id: string;
+	playlist_id: string;
+	track_id: string;
+	position: number;
+	added_at: string;
+	track?: Track;
 }
 
 export interface User {
 	id: string;
-	displayName: string;
+	google_id?: string;
 	username: string;
+	email: string;
+	name?: string;
+	displayName?: string;
+	avatar_url?: string;
 	avatarUrl?: string;
+	role: 'user' | 'admin';
+	created_at?: string;
 	bio?: string;
 	stats?: UserStats;
 }
@@ -75,21 +91,29 @@ export interface LyricLine {
 	tokens?: { text: string; highlight?: boolean }[];
 }
 
-// export interface LyricsResponse {
-// 	track_id: string;
-// 	variant: string;
-// 	lines: LyricLine[];
-// }
-
 export interface Lyric {
 	id: string;
 	track_id: string;
 	language: string;
 	variant: string;
-	lines: LyricLine[]; // Changed from content string
+	lines: LyricLine[];
 	created_at: string;
 }
 
+export interface SongRequest {
+	id: string;
+	query: string;
+	metadata?: {
+		note?: string;
+		reason?: string;
+		version?: string;
+		genre?: string;
+		source_url?: string;
+		[key: string]: any;
+	};
+	status: 'pending' | 'completed' | 'rejected';
+	created_at: string;
+}
 
 export interface SearchResult {
 	artists: Artist[];
