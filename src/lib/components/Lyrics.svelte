@@ -166,11 +166,11 @@
 				{#each lines as line, i}
 					<button
 						id="lyric-line-{i}"
-						class="block w-full origin-center py-2 text-xl font-bold transition-all duration-500 outline-none md:text-3xl
+						class="block w-full origin-center py-4 text-2xl font-bold transition-all duration-500 outline-none md:text-4xl
                         {isSynced
 							? i === activeLineIndex
-								? 'scale-105 text-white opacity-100 blur-none'
-								: 'text-white/60 opacity-40 blur-[1px] hover:opacity-80 hover:blur-none'
+								? 'scale-105 font-extrabold text-white opacity-100 blur-none drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]'
+								: 'scale-95 font-medium text-zinc-400 opacity-50 blur-[0.5px] hover:scale-100 hover:opacity-80 hover:blur-none'
 							: 'text-white opacity-90 hover:opacity-100'}
                         "
 						onclick={() => {
@@ -186,7 +186,7 @@
 						{#if line.tokens && line.tokens.length > 0}
 							{#each line.tokens as token}
 								{#if token.highlight}
-									<span class="text-green-400 dark:text-green-500">{token.text}</span>
+									<span class="text-accent drop-shadow-md">{token.text}</span>
 								{:else}
 									{token.text}
 								{/if}
