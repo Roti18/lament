@@ -17,9 +17,9 @@ function loadPersistedVolume(): number {
     return stored ? parseFloat(stored) : 1;
 }
 
-function persistVolume(volume: number): void {
+function persistVolume(vol: number): void {
     if (!browser) return;
-    localStorage.setItem(VOLUME_STORAGE_KEY, String(volume));
+    localStorage.setItem(VOLUME_STORAGE_KEY, String(vol));
 }
 
 let audio: HTMLAudioElement | null = null;
@@ -45,9 +45,7 @@ function updateMediaSession(track: Track): void {
         title: track.title,
         artist: track.artists.map(a => a.name).join(', '),
         album: track.album || '',
-        artwork: track.coverUrl ? [
-            { src: track.coverUrl, sizes: '512x512' }
-        ] : []
+        artwork: track.coverUrl ? [{ src: track.coverUrl, sizes: '512x512' }] : []
     });
 }
 
@@ -60,47 +58,33 @@ function initAudio(): void {
     volume = loadPersistedVolume();
     audio.volume = volume;
 
-    audio.addEventListener('loadstart', () => {
-        isBuffering = true;
-    });
-
-    audio.addEventListener('canplay', () => {
-        isBuffering = false;
-    });
-
-    audio.addEventListener('waiting', () => {
-        isBuffering = true;
-    });
+    audio.addEventListener('loadstart', () => { isBuffering = true; });
+    audio.addEventListener('canplay', () => { isBuffering = false; });
+    audio.addEventListener('waiting', () => { isBuffering = true; });
 
     audio.addEventListener('playing', () => {
         isBuffering = false;
         isPlaying = true;
-        if ('mediaSession' in navigator) {
-            navigator.mediaSession.playbackState = 'playing';
-        }
+        if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'playing';
     });
 
     audio.addEventListener('pause', () => {
         isPlaying = false;
-        if ('mediaSession' in navigator) {
-            navigator.mediaSession.playbackState = 'paused';
-        }
+        if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'paused';
     });
 
     audio.addEventListener('ended', () => {
         isPlaying = false;
-        if ('mediaSession' in navigator) {
-            navigator.mediaSession.playbackState = 'paused';
-        }
+        if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'paused';
 
         if (repeatMode === 'one') {
             seek(0);
             play();
         } else {
-            const nextIndex = getNextIndex();
-            if (nextIndex !== -1) {
-                queueIndex = nextIndex;
-                play(queue[nextIndex]);
+            const nextIdx = getNextIndex();
+            if (nextIdx !== -1) {
+                queueIndex = nextIdx;
+                play(queue[nextIdx]);
             } else if (repeatMode === 'all' && queue.length > 0) {
                 queueIndex = 0;
                 play(queue[0]);
@@ -108,13 +92,8 @@ function initAudio(): void {
         }
     });
 
-    audio.addEventListener('loadedmetadata', () => {
-        duration = audio?.duration ?? 0;
-    });
-
-    audio.addEventListener('durationchange', () => {
-        duration = audio?.duration ?? 0;
-    });
+    audio.addEventListener('loadedmetadata', () => { duration = audio?.duration ?? 0; });
+    audio.addEventListener('durationchange', () => { duration = audio?.duration ?? 0; });
 
     audio.addEventListener('timeupdate', () => {
         const now = performance.now();
@@ -127,7 +106,6 @@ function initAudio(): void {
     audio.addEventListener('error', () => {
         isBuffering = false;
         isPlaying = false;
-        console.error('Audio playback error:', audio?.error);
     });
 
     if ('mediaSession' in navigator) {
@@ -136,9 +114,7 @@ function initAudio(): void {
         navigator.mediaSession.setActionHandler('previoustrack', () => previous());
         navigator.mediaSession.setActionHandler('nexttrack', () => next());
         navigator.mediaSession.setActionHandler('seekto', (details) => {
-            if (details.seekTime !== undefined) {
-                seek(details.seekTime);
-            }
+            if (details.seekTime !== undefined) seek(details.seekTime);
         });
     }
 }
@@ -162,23 +138,15 @@ function play(track?: Track): void {
         }
     }
 
-    audio.play().catch((err) => {
-        console.error('Playback failed:', err);
-        isPlaying = false;
-    });
+    audio.play().catch(() => { isPlaying = false; });
 }
 
 function pause(): void {
-    if (!audio) return;
-    audio.pause();
+    audio?.pause();
 }
 
 function toggle(): void {
-    if (isPlaying) {
-        pause();
-    } else {
-        play();
-    }
+    isPlaying ? pause() : play();
 }
 
 function seek(time: number): void {
@@ -190,32 +158,30 @@ function seek(time: number): void {
 function setVolume(level: number): void {
     const clampedVolume = Math.max(0, Math.min(1, level));
     volume = clampedVolume;
-    if (audio) {
-        audio.volume = clampedVolume;
-    }
+    if (audio) audio.volume = clampedVolume;
     persistVolume(clampedVolume);
 }
 
 function getNextIndex(): number {
     if (queue.length === 0) return -1;
-    const nextIndex = queueIndex + 1;
-    if (nextIndex < queue.length) return nextIndex;
+    const nextIdx = queueIndex + 1;
+    if (nextIdx < queue.length) return nextIdx;
     if (repeatMode === 'all') return 0;
     return -1;
 }
 
 function next(): void {
-    const nextIndex = getNextIndex();
-    if (nextIndex !== -1) {
-        queueIndex = nextIndex;
-        play(queue[nextIndex]);
+    const nextIdx = getNextIndex();
+    if (nextIdx !== -1) {
+        queueIndex = nextIdx;
+        play(queue[nextIdx]);
     }
 }
 
 function getPreviousIndex(): number {
     if (queue.length === 0) return -1;
-    const prevIndex = queueIndex - 1;
-    if (prevIndex >= 0) return prevIndex;
+    const prevIdx = queueIndex - 1;
+    if (prevIdx >= 0) return prevIdx;
     if (repeatMode === 'all') return queue.length - 1;
     return -1;
 }
@@ -228,13 +194,22 @@ function previous(): void {
         return;
     }
 
-    const prevIndex = getPreviousIndex();
-    if (prevIndex !== -1) {
-        queueIndex = prevIndex;
-        play(queue[prevIndex]);
+    const prevIdx = getPreviousIndex();
+    if (prevIdx !== -1) {
+        queueIndex = prevIdx;
+        play(queue[prevIdx]);
     } else {
         seek(0);
     }
+}
+
+function shuffleArray<T>(arr: T[]): T[] {
+    const result = [...arr];
+    for (let i = result.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [result[i], result[j]] = [result[j], result[i]];
+    }
+    return result;
 }
 
 function toggleShuffle(): void {
@@ -243,30 +218,21 @@ function toggleShuffle(): void {
     if (shuffleEnabled) {
         const currentId = currentTrack?.id;
         const tracksToShuffle = [...queue];
-
-        const currentIndexInQueue = tracksToShuffle.findIndex(t => t.id === currentId);
+        const currentIdx = tracksToShuffle.findIndex(t => t.id === currentId);
         let current: Track | null = null;
-        if (currentIndexInQueue !== -1) {
-            [current] = tracksToShuffle.splice(currentIndexInQueue, 1);
+
+        if (currentIdx !== -1) {
+            [current] = tracksToShuffle.splice(currentIdx, 1);
         }
 
-        for (let i = tracksToShuffle.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [tracksToShuffle[i], tracksToShuffle[j]] = [tracksToShuffle[j], tracksToShuffle[i]];
-        }
-
-        if (current) {
-            queue = [current, ...tracksToShuffle];
-            queueIndex = 0;
-        } else {
-            queue = tracksToShuffle;
-            queueIndex = 0;
-        }
+        const shuffled = shuffleArray(tracksToShuffle);
+        queue = current ? [current, ...shuffled] : shuffled;
+        queueIndex = 0;
     } else {
         const currentId = currentTrack?.id;
         queue = [...originalQueue];
-        const newIndex = queue.findIndex(t => t.id === currentId);
-        queueIndex = newIndex !== -1 ? newIndex : 0;
+        const newIdx = queue.findIndex(t => t.id === currentId);
+        queueIndex = newIdx !== -1 ? newIdx : 0;
     }
 }
 
@@ -280,22 +246,14 @@ function setQueue(tracks: Track[], startIndex = 0): void {
     if (shuffleEnabled) {
         const firstTrack = tracks[startIndex];
         const rest = tracks.filter((_, i) => i !== startIndex);
-
-        for (let i = rest.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [rest[i], rest[j]] = [rest[j], rest[i]];
-        }
-
-        queue = [firstTrack, ...rest];
+        queue = [firstTrack, ...shuffleArray(rest)];
         queueIndex = 0;
     } else {
         queue = [...tracks];
         queueIndex = Math.max(0, Math.min(startIndex, tracks.length - 1));
     }
 
-    if (queue.length > 0) {
-        play(queue[queueIndex]);
-    }
+    if (queue.length > 0) play(queue[queueIndex]);
 }
 
 function clearQueue(): void {
@@ -315,36 +273,16 @@ function formatTime(seconds: number): string {
 }
 
 export const player = {
-    get currentTrack() {
-        return currentTrack;
-    },
-    get isPlaying() {
-        return isPlaying;
-    },
-    get isBuffering() {
-        return isBuffering;
-    },
-    get queue() {
-        return queue;
-    },
-    get queueIndex() {
-        return queueIndex;
-    },
-    get currentTime() {
-        return currentTime;
-    },
-    get duration() {
-        return duration;
-    },
-    get volume() {
-        return volume;
-    },
-    get shuffleEnabled() {
-        return shuffleEnabled;
-    },
-    get repeatMode() {
-        return repeatMode;
-    },
+    get currentTrack() { return currentTrack; },
+    get isPlaying() { return isPlaying; },
+    get isBuffering() { return isBuffering; },
+    get queue() { return queue; },
+    get queueIndex() { return queueIndex; },
+    get currentTime() { return currentTime; },
+    get duration() { return duration; },
+    get volume() { return volume; },
+    get shuffleEnabled() { return shuffleEnabled; },
+    get repeatMode() { return repeatMode; },
 
     play,
     pause,
@@ -357,8 +295,6 @@ export const player = {
     clearQueue,
     toggleShuffle,
     setRepeatMode,
-
     formatTime,
-
     init: initAudio
 };
