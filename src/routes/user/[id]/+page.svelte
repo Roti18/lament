@@ -6,6 +6,8 @@
 		id: page.params.id ?? 'u1',
 		displayName: 'Aurora Listener',
 		username: '@aurora',
+		email: 'aurora@example.com',
+		role: 'user',
 		bio: 'Music is my sanctuary. Finding peace in melodies, rhythms, and the spaces between notes. Always seeking new sounds that move the soul.',
 		stats: {
 			playlistCount: 12,
@@ -64,7 +66,7 @@
 </script>
 
 <svelte:head>
-	<title>{user.displayName} | lament</title>
+	<title>{user.displayName || user.username} | lament</title>
 </svelte:head>
 
 <div class="py-6">
@@ -75,8 +77,8 @@
 			class="mb-6 h-32 w-32 flex-shrink-0 overflow-hidden rounded-full bg-surface-2 md:mr-8 md:mb-0 md:h-40 md:w-40"
 		>
 			<img
-				src={user.avatarUrl || placeholderAvatar(user.displayName)}
-				alt={user.displayName}
+				src={user.avatarUrl || placeholderAvatar(user.displayName || user.username)}
+				alt={user.displayName || user.username}
 				class="h-full w-full object-cover"
 			/>
 		</div>
