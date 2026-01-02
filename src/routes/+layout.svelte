@@ -4,14 +4,25 @@
 	import Player from '$lib/components/Player.svelte';
 	import Navigation from '$lib/components/Navigation.svelte';
 	import SearchModal from '$lib/components/SearchModal.svelte';
+	import LoadingSpinner from '$lib/components/ui/LoadingSpinner.svelte';
 	import { navigating } from '$app/stores';
+	import { LogOut, User as UserIcon, Settings } from 'lucide-svelte';
+	import { page } from '$app/state';
 	import { fade } from 'svelte/transition';
 
 	let { children } = $props();
+
+	// Check if we are on login or register (including any subpaths)
+	let isAuthPage = $derived(
+		page.url.pathname === '/login' ||
+			page.url.pathname === '/register' ||
+			page.url.pathname.includes('/login/') ||
+			page.url.pathname.includes('/register/')
+	);
 </script>
 
 {#if $navigating}
-	<div class="loading-bar" in:fade={{ duration: 100 }} out:fade={{ duration: 300 }}></div>
+	<LoadingSpinner fullScreen={true} size="lg" />
 {/if}
 
 <svelte:head>
@@ -21,16 +32,21 @@
 	<meta name="theme-color" content="#0d0e10" />
 </svelte:head>
 
-<Navigation />
+{#if !isAuthPage}
+	<Navigation />
+{/if}
 
 <main
-	class="min-h-screen pt-4 pb-[calc(var(--spacing-player-height-mobile)+var(--mobile-nav-bottom-total))] lg:pb-24 lg:pl-24"
+	class="min-h-screen {isAuthPage
+		? ''
+		: 'pt-4 pb-[calc(var(--spacing-player-height-mobile)+var(--mobile-nav-bottom-total))] lg:pb-24 lg:pl-24'}"
 >
-	<div class="mx-auto max-w-6xl px-4 lg:px-6">
+	<div class="mx-auto {isAuthPage ? '' : 'max-w-6xl px-4 lg:px-6'}">
 		{@render children()}
 	</div>
 </main>
 
-<Player />
-
-<SearchModal />
+{#if !isAuthPage}
+	<Player />
+	<SearchModal />
+{/if}
