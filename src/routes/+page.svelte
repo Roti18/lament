@@ -5,8 +5,10 @@
 	import ArtistCard from '$lib/components/ArtistCard.svelte';
 	import { Play } from '@lucide/svelte';
 	import Button from '$lib/components/ui/Button.svelte';
+	import TrendingTracks from '$lib/components/explore/TrendingTracks.svelte';
 
 	let { data } = $props();
+
 	let sampleTracks = $derived(data.recentTracks);
 	let sampleAlbums = $derived(data.albums);
 	let sampleArtists = $derived(data.artists);
@@ -40,6 +42,8 @@
 			{/each}
 		</div>
 	</section>
+
+	<TrendingTracks />
 
 	<section>
 		<h2 class="mb-4 text-lg font-medium text-text-primary">Albums for you</h2>
