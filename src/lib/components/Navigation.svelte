@@ -1,24 +1,21 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import ThemeToggle from './ThemeToggle.svelte';
-	import { Home, Music, Disc, User, ListMusic, MessageSquarePlus, Search } from '@lucide/svelte';
+	import { Home, Music, Disc, User, ListMusic, MessageSquarePlus } from '@lucide/svelte';
 	import { auth } from '$lib/stores/auth.svelte';
-
-	$effect(() => {
-		auth.init();
-	});
+	import Logo from './ui/Logo.svelte';
 
 	interface NavItem {
 		href: string;
 		label: string;
-		icon: 'home' | 'music' | 'album' | 'playlist' | 'users' | 'request' | 'search';
+		icon: 'home' | 'music' | 'album' | 'playlist' | 'user' | 'request' | 'search';
 	}
 
 	const navItems = $derived([
 		{ href: '/', label: 'Home', icon: 'home' },
 		{ href: '/tracks', label: 'Tracks', icon: 'music' },
-		{ href: '/search', label: 'Search', icon: 'search' },
 		{ href: '/albums', label: 'Albums', icon: 'album' },
+		{ href: '/request', label: 'Requests', icon: 'request' },
 		{
 			href: auth.user ? '/profile' : '/login',
 			label: auth.user ? 'Profile' : 'Login',
@@ -34,7 +31,6 @@
 
 	const iconMap: Record<string, any> = {
 		home: Home,
-		search: Search,
 		music: Music,
 		album: Disc,
 		playlist: ListMusic,
@@ -49,10 +45,10 @@
 >
 	<a
 		href="/"
-		class="mb-10 flex h-12 w-12 items-center justify-center text-4xl font-bold tracking-tight text-accent italic transition-transform hover:scale-105"
-		style="font-family: 'Cormorant Garamond', serif;"
+		class="mb-10 flex items-center justify-center transition-transform hover:scale-105"
+		aria-label="Home"
 	>
-		L
+		<Logo size="48px" class="text-accent" />
 	</a>
 
 	<ul class="flex w-full flex-col items-center gap-4">
@@ -89,17 +85,6 @@
 	</ul>
 
 	<div class="mt-auto flex flex-col items-center gap-4">
-		<a
-			href="/request"
-			class="group flex h-10 w-10 items-center justify-center rounded-xl text-text-secondary transition-all hover:bg-surface-1 hover:text-text-primary {isActive(
-				'/request'
-			)
-				? 'text-accent'
-				: ''}"
-			aria-label="Request a song"
-		>
-			<MessageSquarePlus class="h-5 w-5" strokeWidth={1.5} />
-		</a>
 		<ThemeToggle />
 	</div>
 </nav>
@@ -133,18 +118,6 @@
 	</a>
 
 	<a
-		href="/search"
-		class="flex h-10 w-10 flex-col items-center justify-center rounded-xl transition-all {isActive(
-			'/search'
-		)
-			? 'text-accent'
-			: 'text-text-secondary active:scale-95'}"
-		aria-label="Search"
-	>
-		<Search class="h-5 w-5" strokeWidth={isActive('/search') ? 2.5 : 2} />
-	</a>
-
-	<a
 		href="/albums"
 		class="flex h-10 w-10 flex-col items-center justify-center rounded-xl transition-all {isActive(
 			'/albums'
@@ -163,7 +136,7 @@
 		)
 			? 'text-accent'
 			: 'text-text-secondary active:scale-95'}"
-		aria-label="Request"
+		aria-label="Requests"
 	>
 		<MessageSquarePlus class="h-5 w-5" strokeWidth={isActive('/request') ? 2.5 : 2} />
 	</a>

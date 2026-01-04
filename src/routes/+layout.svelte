@@ -1,18 +1,19 @@
 <script lang="ts">
 	import './layout.css';
-	import favicon from '$lib/assets/favicon.svg';
 	import Player from '$lib/components/Player.svelte';
 	import Navigation from '$lib/components/Navigation.svelte';
 	import SearchModal from '$lib/components/SearchModal.svelte';
 	import LoadingSpinner from '$lib/components/ui/LoadingSpinner.svelte';
 	import { navigating } from '$app/stores';
-	import { LogOut, User as UserIcon, Settings } from 'lucide-svelte';
 	import { page } from '$app/state';
-	import { fade } from 'svelte/transition';
+	import { auth } from '$lib/stores/auth.svelte';
 
 	let { children } = $props();
 
-	// Check if we are on login or register (including any subpaths)
+	$effect(() => {
+		auth.init();
+	});
+
 	let isAuthPage = $derived(
 		page.url.pathname === '/login' ||
 			page.url.pathname === '/register' ||
@@ -26,7 +27,6 @@
 {/if}
 
 <svelte:head>
-	<link rel="icon" href={favicon} />
 	<title>Lament</title>
 	<meta name="description" content="A calm, personal music listening experience" />
 	<meta name="theme-color" content="#0d0e10" />
