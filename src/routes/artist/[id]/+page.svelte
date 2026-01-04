@@ -40,7 +40,7 @@
 
 		<div>
 			<p class="text-xs font-medium tracking-wider text-text-muted uppercase">Artist</p>
-			<h1 class="mt-1 text-lg font-bold text-text-primary md:text-4xl">{artist.name}</h1>
+			<h1 class="mt-1 text-3xl font-bold text-text-primary md:text-5xl">{artist.name}</h1>
 			{#if artist.bio}
 				<p class="mt-2 max-w-lg text-sm text-text-secondary">{artist.bio}</p>
 			{/if}
@@ -57,7 +57,7 @@
 	</header>
 
 	<section class="mb-10">
-		<h2 class="mb-4 text-lg font-medium text-text-primary">Popular tracks</h2>
+		<h2 class="mb-4 text-xl font-bold text-text-primary">Popular Tracks</h2>
 		<div class="space-y-1">
 			{#each topTracks as track, i}
 				<TrackCard {track} index={i} showIndex />
@@ -66,7 +66,7 @@
 	</section>
 
 	<section>
-		<h2 class="mb-4 text-lg font-medium text-text-primary">Albums</h2>
+		<h2 class="mb-4 text-xl font-bold text-text-primary">Albums</h2>
 		<div class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
 			{#each albums as album}
 				<AlbumCard {album} />

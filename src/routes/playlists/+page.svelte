@@ -21,8 +21,8 @@
 
 <div class="py-6">
 	<header class="mb-6">
-		<h1 class="text-lg font-semibold text-text-primary">Playlists</h1>
-		<p class="text-sm text-text-secondary">{playlists.length} playlists</p>
+		<h1 class="text-3xl font-bold text-text-primary">Playlists</h1>
+		<p class="mt-1 text-sm text-text-secondary">{playlists.length} playlists</p>
 	</header>
 
 	<div class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
@@ -32,7 +32,7 @@
 					<img
 						src={playlist.coverThumb || placeholderArt}
 						alt={playlist.title}
-						class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+						class="h-full w-full object-cover transition-transform duration-300"
 						loading="lazy"
 					/>
 				</div>

@@ -20,7 +20,6 @@ export const GET: RequestHandler = async ({ params, fetch, url }) => {
 
         if (!response.ok) {
             if (response.status === 404) {
-                // Return an empty object structure consistent with the new response format
                 return json({ variant: 'none', lines: [] });
             }
             throw error(response.status, 'Failed to fetch lyrics');
