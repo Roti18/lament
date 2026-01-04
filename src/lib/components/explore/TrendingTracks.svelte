@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { clientApi } from '$lib/api';
 	import TrackCard from '$lib/components/TrackCard.svelte';
+	import Alert from '$lib/components/ui/Alert.svelte';
 	import Skeleton from '$lib/components/ui/Skeleton.svelte';
 	import { onMount } from 'svelte';
 	import type { Track } from '$lib/types';
@@ -24,9 +25,9 @@
 	<h2 class="text-xl font-bold text-text-primary">Trending Now</h2>
 
 	{#if error}
-		<div class="rounded-lg border border-red-500/20 bg-red-500/10 p-4 text-sm text-red-400">
+		<Alert variant="error">
 			{error}
-		</div>
+		</Alert>
 	{:else if loading && tracks.length === 0}
 		<div class="space-y-4">
 			{#each Array(5) as _}

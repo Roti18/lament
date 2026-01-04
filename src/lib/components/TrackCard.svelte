@@ -97,7 +97,7 @@
 		<p class="truncate text-left text-xs text-text-secondary">
 			{#if track.artists && track.artists.length > 0}
 				{#each track.artists as artist, i}
-					<span class="hover:text-accent">{artist.name}</span>
+					<span>{artist.name}</span>
 					{#if i < track.artists.length - 1}
 						<span class="text-text-muted">, </span>
 					{/if}

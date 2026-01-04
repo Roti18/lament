@@ -3,6 +3,7 @@
 	import { fade, fly } from 'svelte/transition';
 	import { clientApi } from '$lib/api';
 	import type { Playlist, Track } from '$lib/types';
+	import Alert from './Alert.svelte';
 	import Button from './Button.svelte';
 
 	let { open = $bindable(false), track } = $props<{
@@ -81,9 +82,7 @@
 		>
 			<div class="flex items-center justify-between border-b border-white/5 p-4">
 				<div class="min-w-0 flex-1">
-					<h2 id="modal-title" class="text-sm font-bold tracking-wider text-text-primary uppercase">
-						Add to Playlist
-					</h2>
+					<h2 id="modal-title" class="text-base font-bold text-text-primary">Add to Playlist</h2>
 					<p class="mt-1 truncate text-xs text-text-muted">
 						"{track.title}"
 					</p>
@@ -99,11 +98,9 @@
 
 			<div class="max-h-[60vh] overflow-y-auto p-4">
 				{#if error}
-					<div
-						class="mb-4 rounded-lg border border-red-500/20 bg-red-500/10 p-3 text-xs text-red-400"
-					>
+					<Alert variant="error" class="mb-4">
 						{error}
-					</div>
+					</Alert>
 				{/if}
 
 				{#if loading}

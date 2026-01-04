@@ -7,7 +7,6 @@
 
 	let { onClose }: { onClose: () => void } = $props();
 
-	// State
 	let lines: LyricLine[] = $state([]);
 	let isSynced = $state(true);
 	let loading = $state(false);
@@ -25,13 +24,11 @@
 		activeLineIndex = -1;
 
 		try {
-			// Fetch specific variant via BFF (always original)
 			const res = await fetch(`/api/lyrics/${trackId}?variant=original`);
 			if (!res.ok) throw new Error('Failed to fetch lyrics');
 
 			const data = await res.json();
 
-			// New structure: { variant, lines, synced }
 			if (data && Array.isArray(data.lines)) {
 				lines = data.lines;
 				isSynced = !!data.synced;
@@ -52,7 +49,6 @@
 		}
 	}
 
-	// Watch for track changes
 	let lastFetchedId = $state<string | null>(null);
 
 	$effect(() => {
@@ -63,17 +59,12 @@
 		}
 	});
 
-	// Sync Logic (Core)
 	$effect(() => {
 		if (!lines.length || !isSynced || !player.currentTrack || loading) return;
 
 		const timeMs = player.currentTime * 1000;
 
-		// Find the active line: highest index where t <= timeMs
 		let newIndex = -1;
-		// Optimization: iterate from current index or use binary search?
-		// Given typically < 100 lines, linear search from start or end is fine.
-		// Prompt example used reverse loop.
 		for (let i = lines.length - 1; i >= 0; i--) {
 			if (lines[i].t <= timeMs) {
 				newIndex = i;
@@ -103,8 +94,6 @@
 			clearTimeout(scrollTimeout);
 			scrollTimeout = setTimeout(() => {
 				userScrolled = false;
-				// Optional: snap back to active line after timeout?
-				// Spotify doesn't always strictly snap back, but often does.
 				if (activeLineIndex !== -1) {
 					scrollToActiveLine(activeLineIndex);
 				}
@@ -117,7 +106,6 @@
 	class="fixed inset-0 z-50 flex flex-col bg-zinc-950/95 transition-all duration-300"
 	transition:fly={{ y: '100%', duration: 300 }}
 >
-	<!-- Background: Simplified for performance -->
 	{#if player.currentTrack?.coverUrl}
 		<div class="pointer-events-none absolute inset-0 -z-10 overflow-hidden opacity-20">
 			<img src={player.currentTrack.coverUrl} alt="" class="h-full w-full object-cover blur-2xl" />
@@ -127,7 +115,6 @@
 		></div>
 	{/if}
 
-	<!-- Header -->
 	<div class="z-10 flex shrink-0 items-center justify-between px-6 py-6 md:px-12">
 		<div class="flex items-center gap-4">
 			<button
@@ -146,7 +133,6 @@
 		</div>
 	</div>
 
-	<!-- Content -->
 	<div
 		class="no-scrollbar relative flex-1 overflow-y-auto px-6 py-10 text-center md:px-12"
 		onscroll={handleScroll}
@@ -174,7 +160,6 @@
 							: 'text-white opacity-90 hover:opacity-100'}
                         "
 						onclick={() => {
-							// Sync audio to this line
 							if (isSynced && line.t !== undefined && line.t !== -1) {
 								player.seek(line.t / 1000);
 								activeLineIndex = i;

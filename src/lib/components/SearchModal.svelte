@@ -1,15 +1,43 @@
 <script lang="ts">
-	import { searchStore } from '$lib/stores/search.svelte';
 	import { clientApi } from '$lib/api';
-	import { fade, fly } from 'svelte/transition';
-	import { Search, X, Music, Disc, User, Loader2, Play } from '@lucide/svelte';
-	import type { Track, Album, Artist, SearchResult } from '$lib/types';
 	import { player } from '$lib/stores/player.svelte';
+	import type { Track, Album, Artist, SearchResult } from '$lib/types';
+	import { Search, Loader2, Play, Music, Disc, User, X } from '@lucide/svelte';
+	import { fade, fly } from 'svelte/transition';
 
-	let query = $state('');
+	let { isOpen = $bindable(false) } = $props();
+
+	let inputQuery = $state('');
 	let isLoading = $state(false);
 	let results = $state<SearchResult>({ artists: [], albums: [], tracks: [] });
-	let timeout: NodeJS.Timeout;
+	let hasSearched = $state(false);
+	let searchTimeout: ReturnType<typeof setTimeout>;
+
+	function handleInput() {
+		clearTimeout(searchTimeout);
+		searchTimeout = setTimeout(() => {
+			if (inputQuery.trim()) {
+				handleSearch(inputQuery.trim());
+			} else {
+				results = { artists: [], albums: [], tracks: [] };
+				hasSearched = false;
+			}
+		}, 300);
+	}
+
+	async function handleSearch(q: string) {
+		if (!q.trim()) return;
+		isLoading = true;
+		hasSearched = true;
+		try {
+			const res = await clientApi.search(q);
+			results = res;
+		} catch (err) {
+			console.error('Search failed:', err);
+		} finally {
+			isLoading = false;
+		}
+	}
 
 	let featuredResult = $derived.by(() => {
 		if (results.artists.length > 0) return { type: 'artist', data: results.artists[0] };
@@ -18,273 +46,239 @@
 		return null;
 	});
 
+	function formatTime(seconds: number): string {
+		const mins = Math.floor(seconds / 60);
+		const secs = Math.floor(seconds % 60);
+		return `${mins}:${secs.toString().padStart(2, '0')}`;
+	}
+
 	function close() {
-		searchStore.close();
-		query = '';
+		isOpen = false;
+		inputQuery = '';
 		results = { artists: [], albums: [], tracks: [] };
+		hasSearched = false;
 	}
 
-	function handleInput() {
-		isLoading = true;
-		clearTimeout(timeout);
-		timeout = setTimeout(async () => {
-			if (!query.trim()) {
-				results = { artists: [], albums: [], tracks: [] };
-				isLoading = false;
-				return;
-			}
-			try {
-				const res = await clientApi.search(query.trim());
-				results = res;
-			} catch (err) {
-				console.error(err);
-			} finally {
-				isLoading = false;
-			}
-		}, 300);
-	}
-
-	function focus(element: HTMLElement) {
-		element.focus();
-	}
-
-	function handleKeydown(e: KeyboardEvent) {
-		if (e.key === 'Escape') close();
-		if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-			e.preventDefault();
-			searchStore.toggle();
+	let inputRef = $state<HTMLInputElement | null>(null);
+	$effect(() => {
+		if (isOpen && inputRef) {
+			inputRef.focus();
 		}
+	});
+
+	function onKeydown(e: KeyboardEvent) {
+		if (e.key === 'Escape') close();
 	}
 </script>
 
-<svelte:window onkeydown={handleKeydown} />
+<svelte:window onkeydown={onKeydown} />
 
-{#if searchStore.isOpen}
+{#if isOpen}
 	<div
-		class="inset-0 bg-black/50 p-4 backdrop-blur-sm sm:pt-20 fixed z-50 flex items-start justify-center"
+		class="fixed inset-0 z-50 flex items-start justify-center px-4 pt-20"
 		transition:fade={{ duration: 200 }}
-		role="dialog"
-		aria-modal="true"
-		onclick={close}
-		tabindex="-1"
-		onkeydown={() => {}}
 	>
 		<div
-			class="glass max-w-4xl rounded-2xl border-white/10 shadow-2xl w-full overflow-hidden border"
-			transition:fly={{ y: 20, duration: 250 }}
-			onclick={(e) => e.stopPropagation()}
+			class="absolute inset-0 bg-black/80 backdrop-blur-sm"
+			onclick={close}
+			onkeydown={(e) => e.key === 'Enter' && close()}
+			role="button"
+			tabindex="-1"
+			aria-label="Close search"
+		></div>
+
+		<div
+			class="relative w-full max-w-3xl overflow-hidden rounded-2xl border border-white/10 bg-surface-0 shadow-2xl"
+			transition:fly={{ y: -20, duration: 300 }}
 			role="dialog"
 			aria-modal="true"
 			tabindex="-1"
-			onkeydown={() => {}}
 		>
-			<div class="border-white/5 p-4 relative border-b">
-				<Search class="left-6 h-5 w-5 absolute top-1/2 -translate-y-1/2 text-text-secondary" />
+			<div class="relative border-b border-white/5 p-4">
+				<Search class="absolute top-1/2 left-6 h-5 w-5 -translate-y-1/2 text-text-secondary" />
 				<input
-					bind:value={query}
+					bind:this={inputRef}
+					bind:value={inputQuery}
 					oninput={handleInput}
 					type="search"
-					use:focus
-					placeholder="Search for tracks, albums, or artists..."
-					class="py-2 pr-4 pl-12 text-lg w-full bg-transparent text-text-primary !outline-none placeholder:text-text-muted focus:!ring-2 focus:!ring-accent/40"
+					placeholder="What do you want to play?"
+					class="w-full rounded-xl border border-white/10 bg-surface-1 py-3 pr-12 pl-12 text-lg text-text-primary placeholder:text-text-muted focus:border-accent/50 focus:ring-1 focus:ring-accent/50 focus:outline-none"
 				/>
-				<div class="right-4 gap-2 absolute top-1/2 flex -translate-y-1/2 items-center">
-					<kbd class="rounded px-2 py-0.5 text-xs md:block hidden bg-surface-3 text-text-muted"
-						>ESC</kbd
-					>
-					<button
-						onclick={close}
-						class="p-1 rounded-full text-text-secondary hover:bg-surface-2 hover:text-text-primary"
-					>
-						<X class="h-5 w-5" />
-					</button>
-				</div>
+				<button
+					onclick={close}
+					class="absolute top-1/2 right-6 -translate-y-1/2 text-text-muted hover:text-white"
+				>
+					<X class="h-5 w-5" />
+				</button>
 			</div>
 
-			<div class="scrollbar-hidden p-6 max-h-[70vh] min-h-[300px] overflow-y-auto">
+			<div
+				class="max-h-[70vh] overflow-y-auto p-4 md:p-6"
+				class:flex={!hasSearched && !isLoading}
+				class:flex-col={!hasSearched && !isLoading}
+				class:items-center={!hasSearched && !isLoading}
+				class:justify-center={!hasSearched && !isLoading}
+			>
 				{#if isLoading}
-					<div class="py-20 flex h-full items-center justify-center">
+					<div class="flex h-40 items-center justify-center">
 						<Loader2 class="h-8 w-8 animate-spin text-accent" />
 					</div>
-				{:else if !query}
-					<div
-						class="py-20 flex h-full flex-col items-center justify-center text-text-muted opacity-50"
-					>
+				{:else if !inputQuery}
+					<div class="flex h-40 flex-col items-center justify-center text-text-muted opacity-50">
 						<Search class="mb-4 h-12 w-12" strokeWidth={1} />
-						<p>Search for your favorite music</p>
+						<p class="font-medium">Type to search</p>
 					</div>
-				{:else if !featuredResult && results.tracks.length === 0}
-					<div class="py-20 flex h-full flex-col items-center justify-center text-text-muted">
-						<p>No results found for "{query}"</p>
+				{:else if hasSearched && !featuredResult && results.tracks.length === 0}
+					<div class="flex h-40 flex-col items-center justify-center text-text-muted">
+						<p>No results found for "{inputQuery}"</p>
 					</div>
 				{:else}
-					<div class="gap-8 md:grid-cols-[1fr_1.5fr] grid">
-						{#if featuredResult}
-							<div class="space-y-4">
-								<h3 class="text-xs font-semibold tracking-wider text-text-secondary uppercase">
-									Top Result
-								</h3>
-								{#if featuredResult.type === 'artist'}
-									{@const artist = featuredResult.data as Artist}
-									<a
-										href="/artist/{artist.id}"
-										onclick={close}
-										class="group p-6 block rounded-xl bg-surface-1 transition-colors hover:bg-surface-2"
-									>
-										<div
-											class="mb-6 shadow-lg relative aspect-square w-full overflow-hidden rounded-full"
+					<div class="grid gap-8 lg:grid-cols-[300px_1fr]">
+						<div class="space-y-6">
+							{#if featuredResult}
+								<section>
+									<h2 class="mb-4 text-xs font-bold tracking-wider text-text-secondary uppercase">
+										Top Result
+									</h2>
+									{#if featuredResult.type === 'artist'}
+										{@const artist = featuredResult.data as Artist}
+										<a
+											href="/artist/{artist.id}"
+											onclick={close}
+											class="group relative block overflow-hidden rounded-xl bg-surface-1 p-4 transition-all hover:bg-surface-2"
 										>
-											{#if artist.imageUrl}
-												<img
-													src={artist.imageUrl}
-													alt={artist.name}
-													class="h-full w-full object-cover"
-												/>
-											{:else}
-												<div class="flex h-full w-full items-center justify-center bg-surface-3">
-													<User class="h-20 w-20 text-text-muted" strokeWidth={1} />
-												</div>
-											{/if}
-										</div>
-										<h2 class="text-2xl font-bold text-text-primary">{artist.name}</h2>
-										<div
-											class="mt-2 text-sm font-medium tracking-tight text-text-secondary uppercase"
-										>
-											Artist
-										</div>
-									</a>
-								{:else if featuredResult.type === 'album'}
-									{@const album = featuredResult.data as Album}
-									<a
-										href="/album/{album.id}"
-										onclick={close}
-										class="group p-6 block rounded-xl bg-surface-1 transition-colors hover:bg-surface-2"
-									>
-										<div
-											class="mb-6 shadow-lg relative aspect-square w-full overflow-hidden rounded-lg"
-										>
-											{#if album.coverUrl}
-												<img
-													src={album.coverUrl}
-													alt={album.title}
-													class="h-full w-full object-cover"
-												/>
-											{:else}
-												<div class="flex h-full w-full items-center justify-center bg-surface-3">
-													<Disc class="h-20 w-20 text-text-muted" strokeWidth={1} />
-												</div>
-											{/if}
-										</div>
-										<h2 class="text-2xl font-bold text-text-primary">{album.title}</h2>
-										<div class="mt-1 text-base text-text-secondary">{album.artist}</div>
-										<div
-											class="mt-4 px-3 py-1 text-xs font-medium inline-block rounded-full bg-surface-3 text-text-secondary"
-										>
-											Album
-										</div>
-									</a>
-								{:else if featuredResult.type === 'track'}
-									{@const track = featuredResult.data as Track}
-									<button
-										onclick={() => {
-											player.play(track);
-											close();
-										}}
-										class="group p-6 block w-full rounded-xl bg-surface-1 text-left transition-colors hover:bg-surface-2"
-									>
-										<div
-											class="mb-6 shadow-lg relative aspect-square w-full overflow-hidden rounded-lg"
-										>
-											{#if track.coverUrl}
-												<img
-													src={track.coverUrl}
-													alt={track.title}
-													class="h-full w-full object-cover"
-												/>
-											{:else}
-												<div class="flex h-full w-full items-center justify-center bg-surface-3">
-													<Music class="h-20 w-20 text-text-muted" strokeWidth={1} />
-												</div>
-											{/if}
-											<div
-												class="inset-0 bg-black/20 absolute flex items-center justify-center opacity-0 transition-opacity group-hover:opacity-100"
-											>
-												<div
-													class="p-4 shadow-xl scale-90 transform rounded-full bg-accent text-surface-0 transition-transform group-hover:scale-100"
-												>
-													<Play class="h-8 w-8 translate-x-1 fill-current" />
-												</div>
+											<div class="mb-4 aspect-square w-full overflow-hidden rounded-full shadow-lg">
+												{#if artist.imageUrl}
+													<img
+														src={artist.imageUrl}
+														alt={artist.name}
+														class="h-full w-full object-cover"
+													/>
+												{:else}
+													<div class="flex h-full w-full items-center justify-center bg-surface-3">
+														<User class="h-12 w-12 text-text-muted" strokeWidth={1} />
+													</div>
+												{/if}
 											</div>
-										</div>
-										<h2 class="text-2xl font-bold text-text-primary">{track.title}</h2>
-										<div class="mt-1 text-base text-text-secondary">
-											{track.artists.map((a) => a.name).join(', ')}
-										</div>
-										<div
-											class="mt-4 px-3 py-1 text-xs font-medium inline-block rounded-full bg-surface-3 text-text-secondary"
+											<h3 class="truncate text-xl font-bold text-white">{artist.name}</h3>
+											<div class="mt-2 text-xs font-medium text-text-secondary">Artist</div>
+										</a>
+									{:else if featuredResult.type === 'album'}
+										{@const album = featuredResult.data as Album}
+										<a
+											href="/album/{album.id}"
+											onclick={close}
+											class="group relative block overflow-hidden rounded-xl bg-surface-1 p-4 transition-all hover:bg-surface-2"
 										>
-											Track
-										</div>
-									</button>
-								{/if}
-							</div>
-						{/if}
-
-						{#if results.tracks.length > 0}
-							<div class="space-y-4">
-								<h3 class="text-xs font-semibold tracking-wider text-text-secondary uppercase">
-									Songs
-								</h3>
-								<div class="space-y-1">
-									{#each results.tracks.slice(0, 10) as track}
+											<div class="mb-4 aspect-square w-full overflow-hidden rounded-lg shadow-lg">
+												{#if album.coverUrl}
+													<img
+														src={album.coverUrl}
+														alt={album.title}
+														class="h-full w-full object-cover"
+													/>
+												{:else}
+													<div class="flex h-full w-full items-center justify-center bg-surface-3">
+														<Disc class="h-12 w-12 text-text-muted" strokeWidth={1} />
+													</div>
+												{/if}
+											</div>
+											<h3 class="truncate text-lg font-bold text-white">{album.title}</h3>
+											<p class="text-sm text-text-secondary">{album.artist}</p>
+										</a>
+									{:else if featuredResult.type === 'track'}
+										{@const track = featuredResult.data as Track}
 										<button
 											onclick={() => {
 												player.play(track);
 												close();
 											}}
-											class="group gap-3 p-2 flex w-full items-center rounded-lg text-left transition-colors hover:bg-surface-2"
+											class="group relative block w-full overflow-hidden rounded-xl bg-surface-1 p-4 text-left transition-all hover:bg-surface-2"
 										>
-											<div
-												class="h-12 w-12 rounded relative flex-shrink-0 overflow-hidden bg-surface-2"
-											>
-												{#if track.coverThumb}
+											<div class="mb-4 aspect-square w-full overflow-hidden rounded-lg shadow-lg">
+												{#if track.coverUrl}
 													<img
-														src={track.coverThumb}
+														src={track.coverUrl}
 														alt={track.title}
 														class="h-full w-full object-cover"
-														loading="lazy"
 													/>
 												{:else}
-													<div
-														class="flex h-full w-full items-center justify-center text-text-muted"
-													>
-														<Music class="h-5 w-5" />
+													<div class="flex h-full w-full items-center justify-center bg-surface-3">
+														<Music class="h-12 w-12 text-text-muted" strokeWidth={1} />
 													</div>
 												{/if}
+											</div>
+											<h3 class="truncate text-lg font-bold text-white">{track.title}</h3>
+											<p class="text-sm text-text-secondary">
+												{track.artists.map((a) => a.name).join(', ')}
+											</p>
+											<div
+												class="absolute right-4 bottom-4 opacity-0 shadow-lg transition-all duration-300 group-hover:opacity-100"
+											>
 												<div
-													class="inset-0 bg-black/40 absolute flex items-center justify-center opacity-0 transition-opacity group-hover:opacity-100"
+													class="flex h-10 w-10 items-center justify-center rounded-full bg-accent text-black"
 												>
-													<Play class="h-4 w-4 text-white fill-current" />
+													<Play class="ml-0.5 h-5 w-5 fill-current" />
 												</div>
 											</div>
-											<div class="min-w-0 flex-1">
-												<div class="font-medium truncate text-text-primary group-hover:text-accent">
-													{track.title}
+										</button>
+									{/if}
+								</section>
+							{/if}
+						</div>
+
+						<div class="min-w-0">
+							{#if results.tracks.length > 0}
+								<section>
+									<h2 class="mb-4 text-xs font-bold tracking-wider text-text-secondary uppercase">
+										Songs
+									</h2>
+									<div class="space-y-1">
+										{#each results.tracks as track}
+											<button
+												onclick={() => {
+													player.play(track);
+													close();
+												}}
+												class="group flex w-full items-center gap-3 rounded-lg p-2 text-left transition-colors hover:bg-surface-1"
+											>
+												<div
+													class="relative h-10 w-10 shrink-0 overflow-hidden rounded bg-surface-2"
+												>
+													{#if track.coverThumb}
+														<img
+															src={track.coverThumb}
+															alt={track.title}
+															class="h-full w-full object-cover"
+														/>
+													{:else}
+														<div class="flex h-full w-full items-center justify-center">
+															<Music class="h-4 w-4 text-text-muted" />
+														</div>
+													{/if}
+													<div
+														class="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover:opacity-100"
+													>
+														<Play class="h-4 w-4 fill-current text-white" />
+													</div>
 												</div>
-												<div class="text-sm truncate text-text-secondary">
-													{track.artists.map((a) => a.name).join(', ')}
+												<div class="min-w-0 flex-grow">
+													<div class="truncate font-medium text-text-primary">
+														{track.title}
+													</div>
+													<div class="truncate text-sm text-text-secondary">
+														{track.artists.map((a) => a.name).join(', ')}
+													</div>
 												</div>
 												<div class="text-xs text-text-muted tabular-nums">
-													{Math.floor(track.duration / 60)}:{(track.duration % 60)
-														.toString()
-														.padStart(2, '0')}
+													{formatTime(track.duration)}
 												</div>
-											</div></button
-										>
-									{/each}
-								</div>
-							</div>
-						{/if}
+											</button>
+										{/each}
+									</div>
+								</section>
+							{/if}
+						</div>
 					</div>
 				{/if}
 			</div>

@@ -88,8 +88,11 @@ export const clientApi = {
         invalidateCache(`playlist_${playlistId}`);
     },
 
-    createRequest: (data: { query: string; metadata?: Record<string, unknown> }) =>
-        fetchInternal<SongRequest>('/requests', { method: 'POST', body: JSON.stringify(data) }),
+    createRequest: async (data: { query: string; metadata?: Record<string, unknown> }) => {
+        const res = await fetchInternal<SongRequest>('/requests', { method: 'POST', body: JSON.stringify(data) });
+        invalidateCache('my_requests');
+        return res;
+    },
     getMyRequests: () => fetchWithCache<SongRequest[]>('my_requests', () => fetchInternal<SongRequest[]>('/requests/me'))
 };
 

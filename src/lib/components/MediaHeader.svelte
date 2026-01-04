@@ -36,7 +36,7 @@
 		<p class="text-[10px] font-medium tracking-wider text-text-muted uppercase md:text-xs">
 			{typeLabel}
 		</p>
-		<h1 class="mt-0.5 truncate text-base font-bold text-text-primary md:mt-1 md:text-4xl">
+		<h1 class="mt-0.5 truncate text-lg font-bold text-text-primary md:mt-1 md:text-4xl">
 			{title}
 		</h1>
 

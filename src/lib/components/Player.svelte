@@ -132,7 +132,7 @@
 						class="interactive flex h-8 w-8 items-center justify-center transition-colors {player.shuffleEnabled
 							? 'text-accent'
 							: 'text-text-secondary hover:text-text-primary'}"
-						aria-label="Toggle shuffle"
+						aria-label="Shuffle"
 					>
 						<Shuffle class="h-4 w-4" />
 					</button>
@@ -201,7 +201,7 @@
 					class="interactive flex h-8 w-8 items-center justify-center transition-colors {showLyrics
 						? 'text-accent'
 						: 'text-text-secondary hover:text-text-primary'}"
-					aria-label="Toggle Lyrics"
+					aria-label="Lyrics"
 				>
 					<Mic2 class="h-4 w-4" />
 				</button>
