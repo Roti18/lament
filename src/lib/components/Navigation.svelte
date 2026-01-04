@@ -1,9 +1,13 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import ThemeToggle from './ThemeToggle.svelte';
-	import { Home, Music, Disc, User, ListMusic, MessageSquarePlus } from '@lucide/svelte';
+	import { Home, Music, Disc, User, ListMusic, MessageSquarePlus, Search } from '@lucide/svelte';
 	import { auth } from '$lib/stores/auth.svelte';
 	import Logo from './ui/Logo.svelte';
+	import SearchModal from './SearchModal.svelte';
+	import Button from './ui/Button.svelte';
+
+	let isSearchOpen = $state(false);
 
 	interface NavItem {
 		href: string;
@@ -35,9 +39,12 @@
 		album: Disc,
 		playlist: ListMusic,
 		user: User,
-		request: MessageSquarePlus
+		request: MessageSquarePlus,
+		search: Search
 	};
 </script>
+
+<SearchModal bind:isOpen={isSearchOpen} />
 
 <nav
 	class="glass-nav transition-theme fixed top-0 left-0 z-40 hidden h-full w-20 flex-col items-center py-6 pb-24 lg:flex"
@@ -85,6 +92,15 @@
 	</ul>
 
 	<div class="mt-auto flex flex-col items-center gap-4">
+		<Button
+			onclick={() => (isSearchOpen = true)}
+			variant="ghost"
+			size="icon"
+			class="rounded-xl"
+			aria-label="Search"
+		>
+			<Search class="h-5 w-5" />
+		</Button>
 		<ThemeToggle />
 	</div>
 </nav>
@@ -117,6 +133,14 @@
 		<Music class="h-5 w-5" strokeWidth={isActive('/tracks') ? 2.5 : 2} />
 	</a>
 
+	<button
+		onclick={() => (isSearchOpen = true)}
+		class="flex h-12 w-12 items-center justify-center rounded-full bg-accent text-surface-0 shadow-lg transition-all active:scale-95"
+		aria-label="Search"
+	>
+		<Search class="h-5 w-5" strokeWidth={2.5} />
+	</button>
+
 	<a
 		href="/albums"
 		class="flex h-10 w-10 flex-col items-center justify-center rounded-xl transition-all {isActive(
@@ -127,18 +151,6 @@
 		aria-label="Albums"
 	>
 		<Disc class="h-5 w-5" strokeWidth={isActive('/albums') ? 2.5 : 2} />
-	</a>
-
-	<a
-		href="/request"
-		class="flex h-10 w-10 flex-col items-center justify-center rounded-xl transition-all {isActive(
-			'/request'
-		)
-			? 'text-accent'
-			: 'text-text-secondary active:scale-95'}"
-		aria-label="Requests"
-	>
-		<MessageSquarePlus class="h-5 w-5" strokeWidth={isActive('/request') ? 2.5 : 2} />
 	</a>
 
 	<a

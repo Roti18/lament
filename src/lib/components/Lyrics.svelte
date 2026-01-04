@@ -4,6 +4,7 @@
 	import { fade, fly } from 'svelte/transition';
 	import { ChevronDown, Loader2, Music2, AlertCircle } from 'lucide-svelte';
 	import type { LyricLine } from '$lib/types';
+	import Button from '$lib/components/ui/Button.svelte';
 
 	let { onClose }: { onClose: () => void } = $props();
 
@@ -117,13 +118,15 @@
 
 	<div class="z-10 flex shrink-0 items-center justify-between px-6 py-6 md:px-12">
 		<div class="flex items-center gap-4">
-			<button
+			<Button
 				onclick={onClose}
-				class="rounded-full bg-white/10 p-2 text-white transition-colors hover:bg-white/20"
+				variant="glass"
+				size="icon"
+				class="rounded-full"
 				aria-label="Close Lyrics"
 			>
 				<ChevronDown class="h-6 w-6" />
-			</button>
+			</Button>
 			<div class="flex flex-col overflow-hidden">
 				<span class="text-xs font-bold tracking-wider text-white/60 uppercase">Now Playing</span>
 				<span class="max-w-[200px] truncate font-semibold text-white"

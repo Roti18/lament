@@ -87,13 +87,9 @@
 						"{track.title}"
 					</p>
 				</div>
-				<button
-					onclick={close}
-					class="flex h-8 w-8 items-center justify-center rounded-lg text-text-muted transition-colors hover:bg-surface-2 hover:text-text-primary"
-					aria-label="Close"
-				>
+				<Button onclick={close} variant="ghost" size="icon" class="rounded-lg" aria-label="Close">
 					<X class="h-4 w-4" />
-				</button>
+				</Button>
 			</div>
 
 			<div class="max-h-[60vh] overflow-y-auto p-4">

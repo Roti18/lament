@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Play, Shuffle, Disc } from '@lucide/svelte';
 	import type { Snippet } from 'svelte';
+	import Button from '$lib/components/ui/Button.svelte';
 
 	interface Props {
 		type: 'playlist' | 'album' | 'artist';
@@ -53,21 +54,25 @@
 		{/if}
 
 		<div class="mt-2.5 flex gap-2 md:mt-4 md:gap-3">
-			<button
+			<Button
 				onclick={onPlay}
-				class="flex h-8 w-8 items-center justify-center rounded-full bg-accent text-surface-0 transition-opacity hover:opacity-90 md:h-10 md:w-10"
+				variant="primary"
+				size="icon"
+				class="h-8 w-8 rounded-full md:h-10 md:w-10"
 				aria-label="Play all"
 			>
 				<Play class="h-3.5 w-3.5 fill-current md:h-5 md:w-5" />
-			</button>
+			</Button>
 			{#if onShuffle}
-				<button
+				<Button
 					onclick={onShuffle}
-					class="flex h-8 w-8 items-center justify-center rounded-full border border-surface-3 text-text-secondary transition-colors hover:border-text-secondary hover:text-text-primary md:h-10 md:w-10"
+					variant="outline"
+					size="icon"
+					class="h-8 w-8 rounded-full md:h-10 md:w-10"
 					aria-label="Shuffle play"
 				>
 					<Shuffle class="h-3.5 w-3.5 md:h-5 md:w-5" />
-				</button>
+				</Button>
 			{/if}
 		</div>
 	</div>

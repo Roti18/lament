@@ -119,7 +119,6 @@
 </svelte:head>
 
 <div class="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-bg">
-	<!-- Static Gradient Background -->
 	<div class="absolute inset-0 bg-gradient-to-br from-accent/20 via-bg to-bg"></div>
 
 	{#if mounted}

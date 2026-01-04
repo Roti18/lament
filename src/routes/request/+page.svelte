@@ -70,7 +70,7 @@
 				class="glass space-y-6 rounded-3xl border border-white/5 p-8"
 			>
 				<div class="space-y-2 text-left">
-					<h1 class="text-xl font-bold tracking-tight text-white uppercase">Song Request</h1>
+					<h1 class="text-xl font-bold tracking-tight uppercase">Song Request</h1>
 					<p class="max-w-xs text-[10px] leading-relaxed text-text-secondary">
 						Songs are processed manually to ensure quality. Availability is not guaranteed.
 					</p>

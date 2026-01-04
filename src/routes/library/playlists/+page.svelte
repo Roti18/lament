@@ -113,7 +113,7 @@
 <div class="flex flex-col gap-6 pb-24">
 	<div class="flex items-center justify-between">
 		<div>
-			<h1 class="text-3xl font-bold text-text-primary">Your Library</h1>
+			<h1 class="text-2xl font-bold text-text-primary">Your Library</h1>
 			<p class="mt-1 text-text-secondary">Manage your personal playlists</p>
 		</div>
 		<Button onclick={openCreateModal} class="rounded-full font-bold">
@@ -130,7 +130,9 @@
 	{:else if error}
 		<div class="rounded-xl border border-red-500/20 bg-red-500/10 p-8 text-center text-red-400">
 			<p>{error}</p>
-			<button onclick={loadPlaylists} class="mt-4 font-semibold text-white underline">Retry</button>
+			<Button onclick={loadPlaylists} variant="ghost" class="mt-4 font-semibold underline"
+				>Retry</Button
+			>
 		</div>
 	{:else if playlists.length === 0}
 		<div
@@ -140,7 +142,7 @@
 				<Music2 class="h-10 w-10 text-text-secondary" />
 			</div>
 			<div>
-				<h3 class="text-xl font-bold text-text-primary">No playlists yet</h3>
+				<h3 class="text-lg font-bold text-text-primary">No playlists yet</h3>
 				<p class="mt-2 max-w-xs text-text-secondary">
 					Create your first playlist and start collecting your favorite tracks.
 				</p>
@@ -169,20 +171,24 @@
 						<div
 							class="absolute inset-0 flex items-center justify-center gap-2 bg-black/40 opacity-0 backdrop-blur-sm transition-opacity group-hover:opacity-100"
 						>
-							<button
+							<Button
 								onclick={() => openEditModal(playlist)}
-								class="rounded-full bg-white/10 p-2 text-white backdrop-blur-md hover:bg-white/20"
+								variant="glass"
+								size="icon"
+								class="rounded-full"
 								title="Edit"
 							>
 								<Edit class="h-4 w-4" />
-							</button>
-							<button
+							</Button>
+							<Button
 								onclick={() => openDeleteModal(playlist)}
-								class="rounded-full bg-red-500/20 p-2 text-red-400 backdrop-blur-md hover:bg-red-500/40"
+								variant="danger"
+								size="icon"
+								class="rounded-full"
 								title="Delete"
 							>
 								<Trash2 class="h-4 w-4" />
-							</button>
+							</Button>
 						</div>
 					</div>
 					<div>
@@ -241,7 +247,7 @@
 					style="outline: none !important;"
 				></textarea>
 			</div>
-			<div class="mt-2 flex justify-end gap-3">
+			<div class="mt-2 flex justify-end gap-5">
 				<Button variant="ghost" type="button" onclick={closeModal}>Cancel</Button>
 				<Button type="submit" variant="primary" loading={submitting}>
 					{submitting ? 'Saving...' : modalMode === 'create' ? 'Create' : 'Save'}

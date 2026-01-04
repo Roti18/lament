@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { X } from 'lucide-svelte';
 	import { fade, scale } from 'svelte/transition';
+	import Button from '$lib/components/ui/Button.svelte';
 
 	let {
 		open = $bindable(false),
@@ -55,13 +56,9 @@
 					<h2 class="text-xl font-bold text-text-primary">
 						{title}
 					</h2>
-					<button
-						onclick={close}
-						class="text-text-secondary transition-colors hover:text-text-primary"
-						aria-label="Close"
-					>
+					<Button onclick={close} variant="ghost" size="icon" aria-label="Close">
 						<X class="h-5 w-5" />
-					</button>
+					</Button>
 				</div>
 			{/if}
 

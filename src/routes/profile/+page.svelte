@@ -39,7 +39,6 @@
 
 {#if user}
 	<div class="fade-in flex flex-col gap-10 pb-20">
-		<!-- Header -->
 		<div class="flex flex-row items-center gap-4 py-6 text-left md:items-end md:gap-6">
 			<div
 				class="relative h-20 w-20 shrink-0 overflow-hidden rounded-full border-2 border-surface-1 shadow-lg md:h-32 md:w-32 md:border-4"
@@ -81,7 +80,6 @@
 		</div>
 
 		<div class="grid grid-cols-1 gap-12 lg:grid-cols-2">
-			<!-- Playlists Section -->
 			<div class="flex flex-col gap-6">
 				<div class="flex items-center justify-between">
 					<h2 class="text-sm font-bold text-text-primary md:text-lg">Your Playlists</h2>
@@ -136,7 +134,6 @@
 				{/if}
 			</div>
 
-			<!-- Requests Section -->
 			<div class="flex flex-col gap-6">
 				<div class="flex items-center justify-between">
 					<h2 class="text-sm font-bold text-text-primary md:text-lg">Your Requests</h2>

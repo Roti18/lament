@@ -4,6 +4,7 @@
 	import type { Track, Album, Artist, SearchResult } from '$lib/types';
 	import { Search, Loader2, Play, Music, Disc, User, X } from '@lucide/svelte';
 	import { fade, fly } from 'svelte/transition';
+	import Button from '$lib/components/ui/Button.svelte';
 
 	let { isOpen = $bindable(false) } = $props();
 
@@ -104,12 +105,14 @@
 					placeholder="What do you want to play?"
 					class="w-full rounded-xl border border-white/10 bg-surface-1 py-3 pr-12 pl-12 text-lg text-text-primary placeholder:text-text-muted focus:border-accent/50 focus:ring-1 focus:ring-accent/50 focus:outline-none"
 				/>
-				<button
+				<Button
 					onclick={close}
-					class="absolute top-1/2 right-6 -translate-y-1/2 text-text-muted hover:text-white"
+					variant="ghost"
+					size="icon"
+					class="absolute top-1/2 right-6 -translate-y-1/2"
 				>
 					<X class="h-5 w-5" />
-				</button>
+				</Button>
 			</div>
 
 			<div

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import type { User, Playlist } from '$lib/types';
+	import Button from '$lib/components/ui/Button.svelte';
 
 	const user: User = {
 		id: page.params.id ?? 'u1',
@@ -119,16 +120,8 @@
 			{/if}
 
 			<div class="mt-6 flex justify-center gap-3 md:justify-start">
-				<button
-					class="rounded-full bg-accent px-5 py-2 text-sm font-medium text-surface-0 transition-opacity hover:opacity-90"
-				>
-					Follow
-				</button>
-				<button
-					class="rounded-full border border-surface-3 px-5 py-2 text-sm text-text-secondary transition-colors hover:border-text-muted hover:text-text-primary"
-				>
-					Message
-				</button>
+				<Button variant="primary" class="rounded-full px-5 py-2 text-sm">Follow</Button>
+				<Button variant="outline" class="rounded-full px-5 py-2 text-sm">Message</Button>
 			</div>
 		</div>
 	</header>

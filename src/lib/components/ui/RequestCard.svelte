@@ -55,9 +55,7 @@
 				>
 					<Music2 class="h-4.5 w-4.5" />
 				</div>
-				<h3
-					class="truncate text-base font-bold text-text-primary transition-colors group-hover:text-accent"
-				>
+				<h3 class="text-base font-bold text-text-primary transition-colors group-hover:text-accent">
 					{request.query}
 				</h3>
 			</div>

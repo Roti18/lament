@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 
-	type Variant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'glass';
+	type Variant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'glass' | 'danger';
 	type Size = 'xs' | 'sm' | 'md' | 'lg' | 'icon';
 
 	let {
@@ -35,7 +35,8 @@
 		outline: 'border border-white/10 bg-transparent hover:bg-surface-2 hover:text-text-primary',
 		ghost: 'hover:bg-surface-2 hover:text-text-primary',
 		glass:
-			'border border-white/10 bg-surface-2/50 text-text-primary hover:bg-surface-2 hover:border-white/20'
+			'border border-white/10 bg-surface-2/50 text-text-primary hover:bg-surface-2 hover:border-white/20',
+		danger: 'bg-red-500 text-white font-bold border-2 border-red-400 hover:bg-red-600'
 	};
 
 	const sizes = {

@@ -1,11 +1,14 @@
 <script lang="ts">
 	import { theme } from '$lib/stores/theme.svelte';
 	import { Sun, Moon } from '@lucide/svelte';
+	import Button from '$lib/components/ui/Button.svelte';
 </script>
 
-<button
+<Button
 	onclick={() => theme.toggle()}
-	class="flex h-10 w-10 items-center justify-center rounded-xl text-text-secondary transition-colors hover:bg-surface-2 hover:text-text-primary active:scale-95"
+	variant="ghost"
+	size="icon"
+	class="rounded-xl"
 	aria-label={theme.current === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
 >
 	{#if theme.current === 'dark'}
@@ -13,4 +16,4 @@
 	{:else}
 		<Moon class="h-5 w-5" />
 	{/if}
-</button>
+</Button>

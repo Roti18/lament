@@ -3,6 +3,7 @@
 	import { player } from '$lib/stores/player.svelte';
 	import TrackCard from '$lib/components/TrackCard.svelte';
 	import AlbumCard from '$lib/components/AlbumCard.svelte';
+	import Button from '$lib/components/ui/Button.svelte';
 	import { Play, User } from '@lucide/svelte';
 
 	let { data } = $props();
@@ -40,18 +41,20 @@
 
 		<div>
 			<p class="text-xs font-medium tracking-wider text-text-muted uppercase">Artist</p>
-			<h1 class="mt-1 text-3xl font-bold text-text-primary md:text-5xl">{artist.name}</h1>
+			<h1 class="mt-1 text-2xl font-bold text-text-primary md:text-4xl">{artist.name}</h1>
 			{#if artist.bio}
 				<p class="mt-2 max-w-lg text-sm text-text-secondary">{artist.bio}</p>
 			{/if}
 			<div class="mt-4 flex justify-center gap-3 md:justify-start">
-				<button
+				<Button
 					onclick={playTopTracks}
-					class="flex h-10 w-10 items-center justify-center rounded-full bg-accent text-surface-0 transition-opacity hover:opacity-90"
+					variant="primary"
+					size="icon"
+					class="rounded-full"
 					aria-label="Play top tracks"
 				>
 					<Play class="h-5 w-5 fill-current" />
-				</button>
+				</Button>
 			</div>
 		</div>
 	</header>

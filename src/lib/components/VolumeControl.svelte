@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { player } from '$lib/stores/player.svelte';
 	import { Volume2, VolumeX, Volume1 } from '@lucide/svelte';
+	import Button from '$lib/components/ui/Button.svelte';
 
 	let previousVolume = $state(1);
 
@@ -26,9 +27,11 @@
 </script>
 
 <div class="hidden items-center gap-2 md:flex">
-	<button
+	<Button
 		onclick={toggleMute}
-		class="interactive flex h-8 w-8 items-center justify-center rounded text-text-secondary hover:text-text-primary"
+		variant="ghost"
+		size="icon"
+		class="rounded"
 		aria-label={player.volume === 0 ? 'Unmute' : 'Mute'}
 	>
 		{#if volumeIcon === 'muted'}
@@ -38,7 +41,7 @@
 		{:else}
 			<Volume2 class="h-5 w-5" />
 		{/if}
-	</button>
+	</Button>
 
 	<div class="relative w-20">
 		<div

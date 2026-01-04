@@ -3,6 +3,7 @@
 	import type { Track } from '$lib/types';
 	import { Play, Pause, Music, ListPlus } from '@lucide/svelte';
 	import AddToPlaylistModal from '$lib/components/ui/AddToPlaylistModal.svelte';
+	import Button from '$lib/components/ui/Button.svelte';
 	import { auth } from '$lib/stores/auth.svelte';
 
 	interface Props {
@@ -113,13 +114,15 @@
 	>
 
 	{#if auth.user}
-		<button
+		<Button
 			onclick={openAddToPlaylist}
-			class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-text-muted transition-all hover:bg-surface-2 hover:text-accent"
+			variant="ghost"
+			size="icon"
+			class="rounded-full"
 			aria-label="Add to playlist"
 		>
 			<ListPlus class="h-4 w-4" />
-		</button>
+		</Button>
 	{/if}
 </div>
 
