@@ -1,16 +1,59 @@
 <script lang="ts">
 	import { auth } from '$lib/stores/auth.svelte';
 	import { goto } from '$app/navigation';
+	import { page } from '$app/state';
 	import { onMount } from 'svelte';
 	import Button from '$lib/components/ui/Button.svelte';
+	import Input from '$lib/components/ui/Input.svelte';
 	import { PUBLIC_GOOGLE_CLIENT_ID } from '$env/static/public';
 	import { fade } from 'svelte/transition';
+	import Logo from '$lib/components/ui/Logo.svelte';
 
 	let email = $state('');
 	let password = $state('');
 	let error = $state('');
+	let infoMessage = $state('');
 	let loading = $state(false);
 	let mounted = $state(false);
+	let redirectTo = $state('/');
+
+	onMount(() => {
+		mounted = true;
+		const params = new URLSearchParams(window.location.search);
+		const reason = params.get('reason');
+		const redirect = params.get('redirectTo');
+
+		if (redirect) redirectTo = redirect;
+
+		if (reason === 'login_required') {
+			infoMessage = 'You need to log in or create an account to access this feature.';
+		}
+
+		const script = document.createElement('script');
+		script.src = 'https://accounts.google.com/gsi/client?hl=en';
+		script.async = true;
+		script.defer = true;
+		script.onload = () => initGoogle();
+		document.head.appendChild(script);
+
+		const handleResize = () => {
+			if (googleInitialized) {
+				const container = document.getElementById('google-button-container');
+				if (container) {
+					google.accounts.id.renderButton(container, {
+						theme: 'outline',
+						size: 'large',
+						width: container.offsetWidth,
+						text: 'continue_with',
+						shape: 'pill'
+					});
+				}
+			}
+		};
+
+		window.addEventListener('resize', handleResize);
+		return () => window.removeEventListener('resize', handleResize);
+	});
 
 	async function handleSubmit(e: Event) {
 		e.preventDefault();
@@ -19,10 +62,10 @@
 
 		try {
 			await auth.login({ login: email, password });
-			goto('/');
+			window.location.href = redirectTo;
 		} catch (err: any) {
 			console.error(err);
-			error = err.message || 'Invalid credentials or server error';
+			error = err.message || 'Invalid email or password. Please try again.';
 		} finally {
 			loading = false;
 		}
@@ -40,7 +83,7 @@
 					try {
 						loading = true;
 						await auth.loginWithGoogle(response.credential);
-						goto('/');
+						window.location.href = redirectTo;
 					} catch (err: any) {
 						console.error('Google Auth Error:', err);
 						error = 'Google login failed: ' + (err.message || 'Unknown error');
@@ -65,37 +108,10 @@
 
 		googleInitialized = true;
 	}
-
-	onMount(() => {
-		mounted = true;
-		const script = document.createElement('script');
-		script.src = 'https://accounts.google.com/gsi/client';
-		script.async = true;
-		script.defer = true;
-		script.onload = () => initGoogle();
-		document.head.appendChild(script);
-
-		const handleResize = () => {
-			if (googleInitialized) {
-				const container = document.getElementById('google-button-container');
-				if (container) {
-					google.accounts.id.renderButton(container, {
-						theme: 'outline',
-						size: 'large',
-						width: container.offsetWidth,
-						text: 'continue_with',
-						shape: 'pill'
-					});
-				}
-			}
-		};
-
-		window.addEventListener('resize', handleResize);
-		return () => window.removeEventListener('resize', handleResize);
-	});
 </script>
 
 <svelte:head>
+	<title>Sign In | lament</title>
 	<link
 		href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
 		rel="stylesheet"
@@ -103,13 +119,8 @@
 </svelte:head>
 
 <div class="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-bg">
-	<!-- Static Subtle Background -->
-	<div
-		class="absolute -top-[10%] -left-[10%] h-[50%] w-[50%] rounded-full bg-accent/10 blur-[120px]"
-	></div>
-	<div
-		class="absolute top-[20%] -right-[10%] h-[40%] w-[40%] rounded-full bg-secondary/10 blur-[100px]"
-	></div>
+	<!-- Static Gradient Background -->
+	<div class="absolute inset-0 bg-gradient-to-br from-accent/20 via-bg to-bg"></div>
 
 	{#if mounted}
 		<div
@@ -119,10 +130,9 @@
 			<div class="mb-10 text-center">
 				<a
 					href="/"
-					class="mb-6 inline-flex h-12 w-12 items-center justify-center text-4xl font-bold tracking-tight text-accent italic transition-transform hover:scale-105"
-					style="font-family: 'Cormorant Garamond', serif;"
+					class="mb-6 inline-flex items-center justify-center text-[#E8A39A] transition-transform hover:scale-105"
 				>
-					L
+					<Logo size="48px" />
 				</a>
 				<h1
 					class="mb-2 text-4xl font-bold tracking-tight text-text-primary"
@@ -130,8 +140,17 @@
 				>
 					Welcome Back
 				</h1>
-				<p class="text-sm text-text-secondary">Enter the realm of curated sounds</p>
+				<p class="text-sm text-text-secondary">Sign in to continue your journey</p>
 			</div>
+
+			{#if infoMessage}
+				<div
+					transition:fade
+					class="mb-6 rounded-xl border border-accent/20 bg-accent/10 p-4 text-center text-sm text-accent"
+				>
+					{infoMessage}
+				</div>
+			{/if}
 
 			{#if error}
 				<div
@@ -165,12 +184,11 @@
 							class="mb-2 block text-[10px] font-bold tracking-widest text-text-muted uppercase"
 							>Email Address</label
 						>
-						<input
+						<Input
 							type="email"
 							id="email"
 							bind:value={email}
 							required
-							class="w-full rounded-xl border border-surface-3 bg-surface-1/50 px-5 py-3.5 text-text-primary placeholder-text-muted transition-all outline-none focus:border-accent focus:bg-surface-2 focus:ring-1 focus:ring-accent/20"
 							placeholder="seraph@lament.io"
 						/>
 					</div>
@@ -180,12 +198,11 @@
 							class="mb-2 block text-[10px] font-bold tracking-widest text-text-muted uppercase"
 							>Password</label
 						>
-						<input
+						<Input
 							type="password"
 							id="password"
 							bind:value={password}
 							required
-							class="w-full rounded-xl border border-surface-3 bg-surface-1/50 px-5 py-3.5 text-text-primary placeholder-text-muted transition-all outline-none focus:border-accent focus:bg-surface-2 focus:ring-1 focus:ring-accent/20"
 							placeholder="••••••••"
 						/>
 					</div>
@@ -198,16 +215,16 @@
 						style="border: 2px solid rgba(255, 255, 255, 0.4) !important;"
 						{loading}
 					>
-						{loading ? 'Entering...' : 'Sign In'}
+						{loading ? 'Signing in...' : 'Sign In'}
 					</Button>
 				</form>
 			</div>
 
 			<p class="mt-10 text-center text-sm text-text-secondary">
-				New to our realm? <a
-					href="/register"
+				Don't have an account? <a
+					href="/register{redirectTo !== '/' ? `?redirectTo=${redirectTo}` : ''}"
 					class="font-semibold text-accent transition-colors hover:text-accent-hover hover:underline"
-					>Create an account</a
+					>Create account</a
 				>
 			</p>
 		</div>

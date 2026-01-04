@@ -21,9 +21,12 @@ export const auth = {
         if (initialized && !force) return;
 
         try {
+            console.log('[Auth] Initializing user session...');
             const me = await clientApi.getMe();
+            console.log('[Auth] User loaded:', me?.username);
             user = me;
-        } catch {
+        } catch (err) {
+            console.error('[Auth] Failed to load user:', err);
             user = null;
         } finally {
             initialized = true;
@@ -48,9 +51,15 @@ export const auth = {
     async logout() {
         try {
             await clientApi.logout();
+        } catch (e) {
+            console.error('Logout API failed', e);
         } finally {
             user = null;
-            if (browser) window.location.href = '/';
+            initialized = false;
+
+            if (browser) {
+                window.location.href = '/login';
+            }
         }
     }
 };

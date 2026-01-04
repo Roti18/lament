@@ -106,7 +106,7 @@
 										<img
 											src={playlist.coverUrl}
 											alt={playlist.title}
-											class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+											class="h-full w-full object-cover transition-transform duration-500"
 										/>
 									{:else}
 										<div class="flex h-full w-full items-center justify-center text-text-muted">
@@ -141,7 +141,7 @@
 				<div class="flex items-center justify-between">
 					<h2 class="text-sm font-bold text-text-primary md:text-lg">Your Requests</h2>
 					<Button variant="glass" size="xs" href="/request" class="gap-1.5 md:gap-2">
-						<Plus class="h-3.5 w-3.5 md:h-4 md:w-4" /> <span class="md:inline">New Request</span>
+						<Plus class="h-3.5 w-3.5 md:h-4 md:w-4" /> <span class="md:inline">Request</span>
 					</Button>
 				</div>
 

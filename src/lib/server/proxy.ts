@@ -16,6 +16,7 @@ export async function proxyRequest(options: ProxyOptions): Promise<Response> {
     const { request, fetch, url, cookies, basePath, subPath } = options;
     const pathSegment = subPath ? `/${subPath}` : '';
     const targetUrl = `${BASE_URL}${basePath}${pathSegment}${url.search}`;
+    console.log(`[Proxy] Forwarding ${request.method} request to: ${targetUrl}`);
 
     try {
         const headers = new Headers(request.headers);
@@ -57,7 +58,8 @@ export async function proxyRequest(options: ProxyOptions): Promise<Response> {
             statusText: response.statusText,
             headers: responseHeaders
         });
-    } catch {
+    } catch (err) {
+        console.error('Proxy Error:', err);
         throw error(500, 'Internal Server Error');
     }
 }
