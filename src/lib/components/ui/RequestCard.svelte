@@ -27,7 +27,7 @@
 		completed: {
 			icon: CheckCircle2,
 			class: 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20',
-			label: 'Done',
+			label: 'Completed',
 			glow: 'shadow-emerald-400/5'
 		},
 		rejected: {
@@ -51,7 +51,7 @@
 		<div class="flex flex-col gap-1.5">
 			<div class="flex items-center gap-2">
 				<div
-					class="flex h-8 w-8 items-center justify-center rounded-lg bg-surface-2 text-accent transition-transform group-hover:scale-110"
+					class="flex h-8 w-8 items-center justify-center rounded-lg bg-surface-2 text-accent transition-transform"
 				>
 					<Music2 class="h-4.5 w-4.5" />
 				</div>
@@ -104,10 +104,10 @@
 			href={metadata.source_url}
 			target="_blank"
 			rel="noopener noreferrer"
-			class="flex w-fit items-center gap-2 rounded-lg bg-accent/5 px-3 py-1.5 text-[10px] font-bold text-accent transition-all hover:scale-105 hover:bg-accent/10 active:scale-95"
+			class="flex w-fit items-center gap-2 rounded-lg bg-accent/5 px-3 py-1.5 text-[10px] font-bold text-accent transition-all hover:bg-accent/10 active:scale-95"
 		>
 			<Link2 class="h-3.5 w-3.5" />
-			VIEW SOURCE
+			View Source
 		</a>
 	{/if}
 </div>
