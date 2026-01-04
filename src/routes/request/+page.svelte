@@ -52,7 +52,16 @@
 	<title>Song Request | lament</title>
 </svelte:head>
 
-{#if auth.user}
+{#if !auth.isInitialized}
+	<div class="flex min-h-[60vh] items-center justify-center">
+		<div class="flex flex-col items-center gap-4">
+			<div
+				class="h-10 w-10 animate-spin rounded-full border-2 border-accent border-t-transparent"
+			></div>
+			<p class="text-xs font-medium tracking-widest text-text-muted uppercase">Initializing...</p>
+		</div>
+	</div>
+{:else if auth.user}
 	<div class="mx-auto max-w-lg pt-12 pb-20 md:pt-24">
 		{#if step === 'form'}
 			<form
@@ -219,5 +228,12 @@
 				</div>
 			</div>
 		{/if}
+	</div>
+{:else}
+	<div class="flex min-h-[60vh] items-center justify-center text-center">
+		<div class="space-y-4">
+			<p class="text-text-secondary">Please log in to make a request.</p>
+			<Button variant="primary" href="/login?redirectTo=/request">Go to Login</Button>
+		</div>
 	</div>
 {/if}
