@@ -16,7 +16,7 @@
 </script>
 
 <svelte:head>
-	<title>Playlists | lament</title>
+	<title>Playlists | Lament</title>
 </svelte:head>
 
 <div class="py-6">

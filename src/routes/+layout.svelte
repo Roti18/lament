@@ -20,6 +20,8 @@
 			page.url.pathname.includes('/login/') ||
 			page.url.pathname.includes('/register/')
 	);
+
+	let isErrorPage = $derived(page.status >= 400);
 </script>
 
 {#if $navigating}
@@ -32,21 +34,21 @@
 	<meta name="theme-color" content="#0d0e10" />
 </svelte:head>
 
-{#if !isAuthPage}
+{#if !isAuthPage && !isErrorPage}
 	<Navigation />
 {/if}
 
 <main
-	class="min-h-screen {isAuthPage
+	class="min-h-screen {isAuthPage || isErrorPage
 		? ''
 		: 'pt-4 pb-[calc(var(--spacing-player-height-mobile)+var(--mobile-nav-bottom-total))] lg:pb-24 lg:pl-24'}"
 >
-	<div class="mx-auto {isAuthPage ? '' : 'max-w-6xl px-4 lg:px-6'}">
+	<div class="mx-auto {isAuthPage || isErrorPage ? '' : 'max-w-6xl px-4 lg:px-6'}">
 		{@render children()}
 	</div>
 </main>
 
-{#if !isAuthPage}
+{#if !isAuthPage && !isErrorPage}
 	<Player />
 	<SearchModal />
 {/if}

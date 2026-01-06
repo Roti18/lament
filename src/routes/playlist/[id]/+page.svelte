@@ -24,7 +24,7 @@
 </script>
 
 <svelte:head>
-	<title>{playlist.title} | lament</title>
+	<title>{playlist.title} | Lament</title>
 </svelte:head>
 
 <div class="py-4 md:py-6">

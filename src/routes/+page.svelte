@@ -19,7 +19,7 @@
 </script>
 
 <svelte:head>
-	<title>Home | lament</title>
+	<title>Home | Lament</title>
 </svelte:head>
 
 <div class="space-y-8 py-4">

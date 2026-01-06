@@ -49,7 +49,7 @@
 </script>
 
 <svelte:head>
-	<title>Song Request | lament</title>
+	<title>Song Request | Lament</title>
 </svelte:head>
 
 {#if !auth.isInitialized}

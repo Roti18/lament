@@ -6,7 +6,7 @@
 </script>
 
 <svelte:head>
-	<title>Albums | lament</title>
+	<title>Albums | Lament</title>
 </svelte:head>
 
 <div class="py-6">

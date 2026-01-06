@@ -20,7 +20,7 @@
 </script>
 
 <svelte:head>
-	<title>{artist.name} | lament</title>
+	<title>{artist.name} | Lament</title>
 </svelte:head>
 
 <div class="py-6">

@@ -24,7 +24,7 @@
 </script>
 
 <svelte:head>
-	<title>{album.title} | lament</title>
+	<title>{album.title} | Lament</title>
 </svelte:head>
 
 <div class="py-4 md:py-6">

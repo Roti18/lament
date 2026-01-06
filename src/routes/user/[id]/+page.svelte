@@ -67,7 +67,7 @@
 </script>
 
 <svelte:head>
-	<title>{user.displayName || user.username} | lament</title>
+	<title>{user.displayName || user.username} | Lament</title>
 </svelte:head>
 
 <div class="py-6">
