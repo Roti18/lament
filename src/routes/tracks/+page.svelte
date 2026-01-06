@@ -1,11 +1,15 @@
 <script lang="ts">
 	import { player } from '$lib/stores/player.svelte';
 	import TrackCard from '$lib/components/TrackCard.svelte';
+	import VirtualTrackList from '$lib/components/VirtualTrackList.svelte';
 	import Button from '$lib/components/ui/Button.svelte';
 	import { Play, Shuffle } from '@lucide/svelte';
 
 	let { data } = $props();
 	let tracks = $derived(data.tracks);
+
+	// Use virtualization for lists > 50 tracks
+	const useVirtualization = $derived(tracks.length > 50);
 
 	function playAll() {
 		player.setQueue(tracks, 0);
@@ -49,9 +53,13 @@
 		</div>
 	</header>
 
-	<div class="space-y-1">
-		{#each tracks as track, i}
-			<TrackCard {track} index={i} showIndex />
-		{/each}
-	</div>
+	{#if useVirtualization}
+		<VirtualTrackList {tracks} />
+	{:else}
+		<div class="space-y-1">
+			{#each tracks as track, i}
+				<TrackCard {track} index={i} showIndex />
+			{/each}
+		</div>
+	{/if}
 </div>

@@ -1,6 +1,7 @@
 interface CacheEntry<T> {
     data: T;
     expiry: number;
+    etag?: string;
 }
 
 export class PersistentCache {
@@ -16,12 +17,13 @@ export class PersistentCache {
         return PersistentCache.instance;
     }
 
-    set<T>(key: string, data: T, ttlMs: number): void {
+    set<T>(key: string, data: T, ttlMs: number, etag?: string): void {
         if (typeof window === 'undefined') return;
 
         const entry: CacheEntry<T> = {
             data,
-            expiry: Date.now() + ttlMs
+            expiry: Date.now() + ttlMs,
+            etag
         };
 
         try {
@@ -44,6 +46,25 @@ export class PersistentCache {
                 return null;
             }
             return entry.data;
+        } catch (e) {
+            this.delete(key);
+            return null;
+        }
+    }
+
+    getWithEtag<T>(key: string): { data: T; etag?: string } | null {
+        if (typeof window === 'undefined') return null;
+
+        const raw = localStorage.getItem(this.prefix + key);
+        if (!raw) return null;
+
+        try {
+            const entry: CacheEntry<T> = JSON.parse(raw);
+            if (Date.now() > entry.expiry) {
+                this.delete(key);
+                return null;
+            }
+            return { data: entry.data, etag: entry.etag };
         } catch (e) {
             this.delete(key);
             return null;
