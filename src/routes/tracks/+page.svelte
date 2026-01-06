@@ -8,7 +8,6 @@
 	let { data } = $props();
 	let tracks = $derived(data.tracks);
 
-	// Use virtualization for lists > 50 tracks
 	const useVirtualization = $derived(tracks.length > 50);
 
 	function playAll() {
