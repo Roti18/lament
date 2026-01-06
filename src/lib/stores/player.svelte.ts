@@ -88,6 +88,8 @@ function initAudio(): void {
             } else if (repeatMode === 'all' && queue.length > 0) {
                 queueIndex = 0;
                 play(queue[0]);
+            } else {
+                loadMoreTracks();
             }
         }
     });
@@ -138,7 +140,16 @@ function play(track?: Track): void {
         }
     }
 
-    audio.play().catch(() => { isPlaying = false; });
+    audio.play()
+        .then(() => {
+            isPlaying = true;
+            if (track) {
+                import('$lib/api').then(({ clientApi }) => {
+                    clientApi.recordPlay(track.id);
+                });
+            }
+        })
+        .catch(() => { isPlaying = false; });
 }
 
 function pause(): void {
@@ -170,11 +181,32 @@ function getNextIndex(): number {
     return -1;
 }
 
+function loadMoreTracks() {
+    fetch('/api/tracks?random=true&limit=10')
+        .then(res => res.json())
+        .then((tracks: Track[]) => {
+            const existingIds = new Set(queue.map(t => t.id));
+            const available = tracks.filter(t => !existingIds.has(t.id));
+
+            if (available.length > 0) {
+                const shuffled = shuffleArray(available);
+                const nextTracks = shuffled.slice(0, 5);
+                const startIndex = queue.length;
+                queue = [...queue, ...nextTracks];
+                queueIndex = startIndex;
+                play(queue[startIndex]);
+            }
+        })
+        .catch(err => console.error('Auto-play failed:', err));
+}
+
 function next(): void {
     const nextIdx = getNextIndex();
     if (nextIdx !== -1) {
         queueIndex = nextIdx;
         play(queue[nextIdx]);
+    } else {
+        loadMoreTracks();
     }
 }
 

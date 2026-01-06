@@ -48,22 +48,12 @@
 			<div class="flex items-center gap-0">
 				<button
 					onclick={() => (showLyrics = !showLyrics)}
-					class="interactive hidden h-8 w-8 items-center justify-center transition-colors md:flex {showLyrics
+					class="interactive flex h-8 w-8 items-center justify-center transition-colors {showLyrics
 						? 'text-accent'
 						: 'text-text-secondary hover:text-text-primary'}"
 					aria-label="Toggle Lyrics"
 				>
 					<Mic2 class="h-4 w-4" />
-				</button>
-
-				<button
-					onclick={() => player.toggleShuffle()}
-					class="interactive flex h-8 w-8 items-center justify-center transition-colors {player.shuffleEnabled
-						? 'text-accent'
-						: 'text-text-secondary hover:text-text-primary'}"
-					aria-label="Toggle shuffle"
-				>
-					<Shuffle class="h-3.5 w-3.5" />
 				</button>
 
 				<button
@@ -92,7 +82,7 @@
 
 				<button
 					onclick={() => player.next()}
-					disabled={player.queueIndex >= player.queue.length - 1 && player.repeatMode !== 'all'}
+					disabled={!player.currentTrack}
 					class="interactive flex h-8 w-8 items-center justify-center text-text-secondary hover:text-text-primary disabled:opacity-40"
 					aria-label="Next track"
 				>
@@ -163,7 +153,7 @@
 
 					<button
 						onclick={() => player.next()}
-						disabled={player.queueIndex >= player.queue.length - 1 && player.repeatMode !== 'all'}
+						disabled={!player.currentTrack}
 						class="interactive flex h-8 w-8 items-center justify-center text-text-secondary hover:text-text-primary disabled:opacity-40"
 						aria-label="Next track"
 					>
