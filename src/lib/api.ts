@@ -26,9 +26,11 @@ async function fetchInternal<T>(path: string, options: RequestInit = {}): Promis
 }
 
 export const clientApi = {
-    getTracks: () => fetchWithCache<Track[]>('tracks', () => fetchInternal<Track[]>('/tracks')),
-    getAlbums: () => fetchWithCache<Album[]>('albums', () => fetchInternal<Album[]>('/albums')),
-    getArtists: () => fetchWithCache<Artist[]>('artists', () => fetchInternal<Artist[]>('/artists')),
+    getTracks: (limit = 10) => fetchWithCache<Track[]>('tracks', () => fetchInternal<Track[]>(`/tracks?limit=${limit}`)),
+    getTrendingTracks: (window = '24h', limit = 20) => fetchWithCache<Track[]>('tracks_trending', () => fetchInternal<Track[]>(`/tracks/trending?window=${window}&limit=${limit}`), { ttl: 1000 * 60 * 5 }),
+    getMostPlayedTracks: (limit = 20) => fetchWithCache<Track[]>('tracks_most_played', () => fetchInternal<Track[]>(`/tracks/most-played?limit=${limit}`), { ttl: 1000 * 60 * 15 }),
+    getAlbums: (limit = 10) => fetchWithCache<Album[]>('albums', () => fetchInternal<Album[]>(`/albums?limit=${limit}`)),
+    getArtists: (limit = 10) => fetchWithCache<Artist[]>('artists', () => fetchInternal<Artist[]>(`/artists?limit=${limit}`)),
     getCategories: () => fetchWithCache<Playlist[]>('categories', () => fetchInternal<Playlist[]>('/categories')),
     search: (query: string) =>
         fetchWithCache<SearchResult>(`search_${query}`, () => fetchInternal<SearchResult>(`/search?q=${encodeURIComponent(query)}`)),
@@ -93,6 +95,14 @@ export const clientApi = {
         invalidateCache('my_requests');
         return res;
     },
-    getMyRequests: () => fetchWithCache<SongRequest[]>('my_requests', () => fetchInternal<SongRequest[]>('/requests/me'))
+    getMyRequests: () => fetchWithCache<SongRequest[]>('my_requests', () => fetchInternal<SongRequest[]>('/requests/me')),
+
+    recordPlay: async (trackId: string) => {
+        try {
+            await fetchInternal<void>(`/tracks/${trackId}/play`, { method: 'POST' });
+        } catch (e) {
+            console.error('Failed to record play:', e);
+        }
+    }
 };
 

@@ -12,7 +12,7 @@
 
 	onMount(async () => {
 		try {
-			tracks = await clientApi.getTracks();
+			tracks = await clientApi.getTrendingTracks();
 		} catch (e: any) {
 			error = e.message || 'Failed to load tracks';
 		} finally {

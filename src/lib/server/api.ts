@@ -71,7 +71,7 @@ function mapTrack(item: Record<string, unknown>): Track {
 
 function mapAlbum(a: Record<string, unknown>): Album {
     return {
-        id: String(a.id),
+        id: String(a.id || a.slug),
         title: String(a.title),
         artist: (a.artist as { name?: string })?.name || String(a.artist) || 'Unknown Artist',
         artistId: (a.artist as { id?: string })?.id || String(a.artist_id || ''),
@@ -123,15 +123,32 @@ function mapPlaylist(p: Record<string, unknown>): Playlist {
     };
 }
 
+
+
 export const api = {
+    getRandTracks: async (limit = 10): Promise<Track[]> => {
+        const data = await fetchAPI<Record<string, unknown>[]>(`/tracks/random?limit=${limit}`);
+        return data?.map(mapTrack) ?? [];
+    },
+
     getTracks: async (): Promise<Track[]> => {
         const data = await fetchAPI<Record<string, unknown>[]>('/tracks');
         return data?.map(mapTrack) ?? [];
     },
 
+    getRandAlbums: async (limit = 10): Promise<Album[]> => {
+        const data = await fetchAPI<Record<string, unknown>[]>(`/albums/random?limit=${limit}`);
+        return data?.map(mapAlbum) ?? [];
+    },
+
     getAlbums: async (): Promise<Album[]> => {
         const data = await fetchAPI<Record<string, unknown>[]>('/albums');
         return data?.map(mapAlbum) ?? [];
+    },
+
+    getRandArtists: async (limit = 10): Promise<Artist[]> => {
+        const data = await fetchAPI<Record<string, unknown>[]>(`/artists/random?limit=${limit}`);
+        return data?.map(mapArtist) ?? [];
     },
 
     getArtists: async (): Promise<Artist[]> => {
@@ -179,6 +196,22 @@ export const api = {
         return await fetchAPI<Record<string, unknown>>('/requests', {
             method: 'POST',
             body: JSON.stringify(body)
+        });
+    },
+
+    getTrendingTracks: async (window = '24h', limit = 20): Promise<Track[]> => {
+        const data = await fetchAPI<Record<string, unknown>[]>(`/tracks/random?limit=${limit}`);
+        return data?.map(mapTrack) ?? [];
+    },
+
+    getMostPlayedTracks: async (limit = 20): Promise<Track[]> => {
+        const data = await fetchAPI<Record<string, unknown>[]>(`/tracks/most-played?limit=${limit}`);
+        return data?.map(mapTrack) ?? [];
+    },
+
+    recordPlay: async (trackId: string): Promise<void> => {
+        await fetchAPI<void>(`/tracks/${trackId}/play`, {
+            method: 'POST'
         });
     }
 };
