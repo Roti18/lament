@@ -1,239 +1,137 @@
 <script lang="ts">
-	import { fade, fly } from 'svelte/transition';
-	import { Check, X, Send, Link2, HelpCircle, Info } from '@lucide/svelte';
+	import { Plus, ArrowUpDown, ChevronDown, Check } from 'lucide-svelte';
 	import { clientApi } from '$lib/api';
 	import Button from '$lib/components/ui/Button.svelte';
-	import Input from '$lib/components/ui/Input.svelte';
-	import { auth } from '$lib/stores/auth.svelte';
-	import { goto } from '$app/navigation';
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
+	import LoadingSpinner from '$lib/components/ui/LoadingSpinner.svelte';
+	import RequestCard from '$lib/components/ui/RequestCard.svelte';
+	import type { SongRequest } from '$lib/types';
+	import { fade, slide } from 'svelte/transition';
 
-	let step = $state<'form' | 'success'>('form');
-	let loading = $state(false);
-	let error = $state('');
-	let formData = $state({
-		query: '',
-		reason: '',
-		genre: '',
-		source_url: ''
-	});
+	let requests = $state<SongRequest[]>([]);
+	let loading = $state(true);
+	let sortBy = $state<'newest' | 'oldest' | 'status'>('newest');
+	let isSortOpen = $state(false);
 
-	$effect(() => {
-		if (browser && auth.isInitialized && !auth.user) {
-			goto('/login?reason=login_required&redirectTo=/request');
+	const sortOptions = [
+		{ id: 'newest', label: 'Newest' },
+		{ id: 'oldest', label: 'Oldest' },
+		{ id: 'status', label: 'Status' }
+	] as const;
+
+	let sortedRequests = $derived.by(() => {
+		let result = [...requests];
+		if (sortBy === 'newest') {
+			result.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+		} else if (sortBy === 'oldest') {
+			result.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+		} else if (sortBy === 'status') {
+			result.sort((a, b) => a.status.localeCompare(b.status));
 		}
+		return result;
 	});
 
-	async function handleSubmit(e: Event) {
-		e.preventDefault();
-		loading = true;
-		error = '';
-
+	onMount(async () => {
 		try {
-			await clientApi.createRequest({
-				query: formData.query,
-				metadata: {
-					note: formData.reason,
-					genre: formData.genre,
-					source_url: formData.source_url
-				}
-			});
-			step = 'success';
-		} catch (err: any) {
-			console.error(err);
-			error = err.message || 'Gagal mengirim permintaan. Silakan coba lagi.';
+			requests = await clientApi.getAllRequests();
+		} catch (e) {
+			console.error('Failed to load requests', e);
 		} finally {
 			loading = false;
 		}
+	});
+
+	function handleOutsideClick() {
+		if (isSortOpen) isSortOpen = false;
 	}
 </script>
 
 <svelte:head>
-	<title>Song Request | Lament</title>
+	<title>Requests | Lament</title>
 </svelte:head>
 
-{#if !auth.isInitialized}
-	<div class="flex min-h-[60vh] items-center justify-center">
-		<div class="flex flex-col items-center gap-4">
-			<div
-				class="h-10 w-10 animate-spin rounded-full border-2 border-accent border-t-transparent"
-			></div>
-			<p class="text-xs font-medium tracking-widest text-text-muted uppercase">Initializing...</p>
+<div class="mx-auto max-w-4xl px-6 py-12 pb-32">
+	<!-- Restored Header Size -->
+	<header class="mb-10 flex items-center justify-between">
+		<div>
+			<h1 class="text-3xl font-bold text-text-primary">Requests</h1>
+			<p class="mt-1 text-sm text-text-secondary">{requests.length} tracks requested</p>
 		</div>
-	</div>
-{:else if auth.user}
-	<div class="mx-auto max-w-lg pt-12 pb-20 md:pt-24">
-		{#if step === 'form'}
-			<form
-				in:fly={{ y: 20, duration: 400 }}
-				onsubmit={handleSubmit}
-				class="glass space-y-6 rounded-3xl border border-white/5 p-8"
+		<Button 
+			variant="primary" 
+			size="md" 
+			href="/request/new" 
+			class="rounded-xl px-6"
+		>
+			<Plus class="mr-2 h-4 w-4" strokeWidth={2.5} />
+			New Request
+		</Button>
+	</header>
+
+	<!-- Sorting is the only thing kept small -->
+	<div class="mb-6 flex items-center justify-between px-2">
+		<div class="text-[10px] font-bold uppercase tracking-widest text-text-muted">
+			{sortedRequests.length} results
+		</div>
+
+		<div class="relative">
+			<button
+				onclick={(e) => {
+					e.stopPropagation();
+					isSortOpen = !isSortOpen;
+				}}
+				class="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-text-secondary transition-colors hover:text-text-primary"
 			>
-				<div class="space-y-2 text-left">
-					<h1 class="text-xl font-bold tracking-tight uppercase">Song Request</h1>
-					<p class="max-w-xs text-[10px] leading-relaxed text-text-secondary">
-						Songs are processed manually to ensure quality. Availability is not guaranteed.
-					</p>
-				</div>
+				<ArrowUpDown class="h-3 w-3" />
+				<span>Sort: {sortOptions.find((o) => o.id === sortBy)?.label}</span>
+				<ChevronDown class="h-3 w-3 transition-transform {isSortOpen ? 'rotate-180' : ''}" />
+			</button>
 
-				{#if error}
-					<div
-						class="rounded-lg border border-red-500/20 bg-red-500/10 p-3 text-left text-xs text-red-400"
-					>
-						{error}
-					</div>
-				{/if}
-
-				<div class="space-y-4">
-					<div class="group space-y-1">
-						<label
-							for="query"
-							class="px-1 text-[10px] font-bold tracking-wider text-text-secondary uppercase"
-							>Song Title / Artist</label
-						>
-						<div class="relative">
-							<Input
-								type="text"
-								id="query"
-								bind:value={formData.query}
-								required
-								placeholder="Hindia - Secukupnya"
-							/>
-						</div>
-					</div>
-
-					<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-						<div class="group space-y-1">
-							<label
-								for="genre"
-								class="px-1 text-[10px] font-bold tracking-wider text-text-secondary uppercase"
-								>Genre</label
-							>
-							<div class="relative">
-								<div
-									class="pointer-events-none absolute inset-y-0 left-3 z-10 flex items-center text-text-muted"
-								>
-									<Info class="h-3.5 w-3.5" />
-								</div>
-								<Input
-									type="text"
-									id="genre"
-									bind:value={formData.genre}
-									placeholder="Pop / Rock / JKT48"
-									class="pl-9"
-								/>
-							</div>
-						</div>
-
-						<div class="group space-y-1">
-							<label
-								for="source"
-								class="px-1 text-[10px] font-bold tracking-wider text-text-secondary uppercase"
-								>Source Link (URL)</label
-							>
-							<div class="relative">
-								<div
-									class="pointer-events-none absolute inset-y-0 left-3 z-10 flex items-center text-text-muted"
-								>
-									<Link2 class="h-3.5 w-3.5" />
-								</div>
-								<Input
-									type="url"
-									id="source"
-									bind:value={formData.source_url}
-									placeholder="https://youtube.com/..."
-									class="pl-9"
-								/>
-							</div>
-						</div>
-					</div>
-
-					<div class="group space-y-1">
-						<label
-							for="reason"
-							class="px-1 text-[10px] font-bold tracking-wider text-text-secondary uppercase"
-							>Notes (Optional)</label
-						>
-						<div class="relative">
-							<div class="pointer-events-none absolute top-3.5 left-3 text-text-muted">
-								<HelpCircle class="h-3.5 w-3.5" />
-							</div>
-							<textarea
-								id="reason"
-								bind:value={formData.reason}
-								rows="3"
-								placeholder="Add any additional details..."
-								class="w-full resize-none rounded-xl border border-white/10 bg-surface-1 py-3 pr-4 pl-9 text-sm text-white transition-all outline-none placeholder:text-text-muted focus:border-accent/50 focus:ring-1 focus:ring-accent/50 focus:outline-none focus-visible:ring-1 focus-visible:ring-accent/50 focus-visible:outline-none"
-								style="outline: none !important;"
-							></textarea>
-						</div>
-					</div>
-				</div>
-
-				<div class="flex items-center justify-between pt-4">
-					<a
-						href="/profile"
-						class="flex h-10 w-10 items-center justify-center rounded-xl text-text-muted transition-colors hover:bg-surface-2 hover:text-text-primary"
-						aria-label="Cancel"
-					>
-						<X class="h-5 w-5" strokeWidth={2} />
-					</a>
-
-					<Button
-						type="submit"
-						variant="primary"
-						size="md"
-						class="rounded-xl px-8 font-bold"
-						{loading}
-					>
-						<span class="flex items-center gap-2">
-							Submit <Send class="h-4 w-4" strokeWidth={2.5} />
-						</span>
-					</Button>
-				</div>
-			</form>
-		{:else}
-			<div
-				in:fly={{ y: 20, duration: 400 }}
-				class="glass flex flex-col items-start gap-6 rounded-3xl border border-white/5 p-10 text-left"
-			>
-				<div
-					class="flex h-12 w-12 items-center justify-center rounded-xl bg-accent text-black shadow-lg shadow-accent/20"
+			{#if isSortOpen}
+				<!-- svelte-ignore a11y_click_events_have_key_events -->
+				<!-- svelte-ignore a11y_no_static_element_interactions -->
+				<div 
+					class="absolute right-0 top-full z-50 mt-2 w-36 overflow-hidden rounded-xl border border-white/5 bg-surface-1 p-1 shadow-2xl backdrop-blur-xl"
+					transition:slide={{ duration: 150 }}
+					onclick={(e) => e.stopPropagation()}
 				>
-					<Check class="h-6 w-6" strokeWidth={3} />
+					{#each sortOptions as option}
+						<button
+							onclick={() => {
+								sortBy = option.id;
+								isSortOpen = false;
+							}}
+							class="flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-[10px] font-bold uppercase tracking-widest transition-colors {sortBy === option.id ? 'bg-accent text-black' : 'text-text-secondary hover:bg-surface-2 hover:text-text-primary'}"
+						>
+							{option.label}
+							{#if sortBy === option.id}
+								<Check class="h-3 w-3" strokeWidth={3} />
+							{/if}
+						</button>
+					{/each}
 				</div>
-				<div class="space-y-3">
-					<h2 class="text-xl font-bold tracking-tight text-white uppercase">Request Received</h2>
-					<p class="max-w-xs text-xs leading-relaxed text-text-secondary">
-						We've received your request for <span class="font-bold text-white"
-							>{formData.query}</span
-						>. We'll get to it soon!
-					</p>
-				</div>
-				<div class="flex w-full flex-col gap-3">
-					<Button variant="primary" size="md" href="/profile" class="w-full rounded-xl font-bold">
-						Back to Profile
-					</Button>
-					<Button
-						variant="ghost"
-						size="sm"
-						class="text-xs text-text-muted hover:text-white"
-						onclick={() => {
-							step = 'form';
-							formData = { query: '', reason: '', genre: '', source_url: '' };
-						}}
-					>
-						Request Another
-					</Button>
-				</div>
-			</div>
-		{/if}
-	</div>
-{:else}
-	<div class="flex min-h-[60vh] items-center justify-center text-center">
-		<div class="space-y-4">
-			<p class="text-text-secondary">Please log in to make a request.</p>
-			<Button variant="primary" href="/login?redirectTo=/request">Go to Login</Button>
+			{/if}
 		</div>
 	</div>
+
+	<!-- Content -->
+	{#if loading}
+		<div class="flex h-40 items-center justify-center">
+			<LoadingSpinner size="md" />
+		</div>
+	{:else if sortedRequests.length > 0}
+		<div class="grid gap-3" in:fade={{ duration: 200 }}>
+			{#each sortedRequests as req (req.id)}
+				<RequestCard request={req} />
+			{/each}
+		</div>
+	{:else}
+		<div class="flex flex-col items-center justify-center rounded-3xl border border-dashed border-surface-1 bg-surface-1/20 py-24">
+			<p class="text-sm text-text-muted">No requests found</p>
+		</div>
+	{/if}
+</div>
+
+{#if isSortOpen}
+	<div class="fixed inset-0 z-40" onclick={handleOutsideClick}></div>
 {/if}

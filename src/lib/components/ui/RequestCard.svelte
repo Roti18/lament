@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Clock, CheckCircle2, XCircle, Link2, Info, Music2 } from '@lucide/svelte';
+	import { Share2, Clock, CheckCircle2, XCircle } from '@lucide/svelte';
 	import type { SongRequest } from '$lib/types';
 	import { fade } from 'svelte/transition';
 
@@ -18,94 +18,54 @@
 	});
 
 	const statusConfig = {
-		pending: {
-			icon: Clock,
-			class: 'text-amber-400 bg-amber-400/10 border-amber-400/20',
-			label: 'Pending',
-			glow: 'shadow-amber-400/5'
-		},
-		completed: {
-			icon: CheckCircle2,
-			class: 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20',
-			label: 'Completed',
-			glow: 'shadow-emerald-400/5'
-		},
-		rejected: {
-			icon: XCircle,
-			class: 'text-red-400 bg-red-400/10 border-red-400/20',
-			label: 'Rejected',
-			glow: 'shadow-red-400/5'
-		}
+		pending: { color: 'text-amber-500', bar: 'bg-amber-500', icon: Clock, label: 'Pending' },
+		completed: { color: 'text-emerald-500', bar: 'bg-emerald-500', icon: CheckCircle2, label: 'Ready' },
+		rejected: { color: 'text-red-500', bar: 'bg-red-500', icon: XCircle, label: 'Declined' }
 	};
 
-	const config = $derived(
-		statusConfig[request.status as keyof typeof statusConfig] || statusConfig.pending
-	);
+	const config = $derived(statusConfig[request.status as keyof typeof statusConfig] || statusConfig.pending);
 </script>
 
 <div
-	in:fade={{ duration: 300 }}
-	class="group relative flex flex-col gap-4 rounded-2xl border border-white/5 bg-surface-1/30 p-5 transition-all duration-300 hover:border-white/10 hover:bg-surface-1/50 hover:shadow-2xl {config.glow}"
+	in:fade={{ duration: 200 }}
+	class="group relative overflow-hidden rounded-2xl border border-white/[0.03] bg-surface-1/20 py-5 pl-7 pr-6 transition-all hover:bg-surface-1/40 hover:border-white/10"
 >
-	<div class="flex items-start justify-between gap-4">
-		<div class="flex flex-col gap-1.5">
-			<div class="flex items-center gap-2">
-				<div
-					class="flex h-8 w-8 items-center justify-center rounded-lg bg-surface-2 text-accent transition-transform"
-				>
-					<Music2 class="h-4.5 w-4.5" />
-				</div>
-				<h3 class="text-base font-bold text-text-primary transition-colors group-hover:text-accent">
+	<!-- Status Accent Bar -->
+	<div class="absolute left-0 top-0 bottom-0 w-1 {config.bar} opacity-40 transition-opacity group-hover:opacity-100"></div>
+
+	<div class="flex items-center justify-between gap-4">
+		<div class="min-w-0 flex-1">
+			<div class="flex items-center gap-3">
+				<h3 class="truncate text-[15px] font-bold text-text-primary tracking-tight">
 					{request.query}
 				</h3>
 			</div>
-
-			<div class="mt-1 flex flex-wrap items-center gap-2">
-				{#if metadata.genre || metadata.version}
-					<span
-						class="flex items-center gap-1 rounded border border-white/5 bg-white/5 px-2 py-0.5 text-[10px] font-bold tracking-tight text-white/50 uppercase"
-					>
-						<Info class="h-3 w-3" />
-						{metadata.genre || metadata.version}
-					</span>
-				{/if}
-				<span class="text-[10px] font-medium tracking-wider text-text-muted uppercase">
-					{new Date(request.created_at).toLocaleDateString(undefined, {
-						day: 'numeric',
-						month: 'short',
-						year: 'numeric'
-					})}
-				</span>
+			
+			<div class="mt-1 flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-text-muted">
+				<span>{metadata.genre || 'General'}</span>
+				<span class="h-1 w-1 rounded-full bg-white/5"></span>
+				<span>{new Date(request.created_at).toLocaleDateString()}</span>
 			</div>
 		</div>
 
-		<span
-			class="flex items-center gap-1.5 rounded-full border px-3 py-1 text-[10px] font-bold tracking-wider uppercase transition-all {config.class}"
-		>
-			<config.icon class="h-3 w-3" strokeWidth={3} />
-			{config.label}
-		</span>
-	</div>
+		<div class="flex shrink-0 items-center gap-5">
+			<div class="flex items-center gap-2">
+				<config.icon class="h-3.5 w-3.5 {config.color}" strokeWidth={3} />
+				<span class="text-[10px] font-black uppercase tracking-[0.1em] {config.color}">
+					{config.label}
+				</span>
+			</div>
 
-	{#if metadata.note || metadata.reason}
-		<div
-			class="relative rounded-xl border border-white/5 bg-white/[0.02] p-3 transition-colors group-hover:bg-white/[0.04]"
-		>
-			<p class="line-clamp-2 text-xs leading-relaxed text-text-secondary italic">
-				"{metadata.note || metadata.reason}"
-			</p>
+			{#if metadata.source_url}
+				<a 
+					href={metadata.source_url} 
+					target="_blank" 
+					class="text-text-muted transition-colors hover:text-accent"
+					aria-label="Source Link"
+				>
+					<Share2 class="h-4 w-4" />
+				</a>
+			{/if}
 		</div>
-	{/if}
-
-	{#if metadata.source_url}
-		<a
-			href={metadata.source_url}
-			target="_blank"
-			rel="noopener noreferrer"
-			class="flex w-fit items-center gap-2 rounded-lg bg-accent/5 px-3 py-1.5 text-[10px] font-bold text-accent transition-all hover:bg-accent/10 active:scale-95"
-		>
-			<Link2 class="h-3.5 w-3.5" />
-			View Source
-		</a>
-	{/if}
+	</div>
 </div>
