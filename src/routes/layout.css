@@ -20,6 +20,8 @@
 	--mobile-nav-height: 4rem;
 	--mobile-nav-bottom-total: var(--mobile-nav-height);
 	--player-height-mobile: 6rem;
+	--player-height-desktop: 5rem;
+	--spacing-nav-width: 5rem;
 
 	--transition-fast: 150ms;
 	--transition-normal: 300ms;
@@ -98,7 +100,7 @@
 	--color-success: var(--color-success);
 	--color-error: var(--color-error);
 	--font-sans: var(--font-sans);
-	--spacing-player-height: var(--spacing-player-height);
+	--spacing-player-height: var(--player-height-desktop);
 	--spacing-player-height-mobile: var(--player-height-mobile);
 	--spacing-nav-width: var(--spacing-nav-width);
 	--spacing-mobile-nav: var(--mobile-nav-height);

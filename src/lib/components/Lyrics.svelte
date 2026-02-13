@@ -2,7 +2,7 @@
 	import { browser } from '$app/environment';
 	import { player } from '$lib/stores/player.svelte';
 	import { fade, fly } from 'svelte/transition';
-	import { ChevronDown, Loader2, Music2, AlertCircle } from 'lucide-svelte';
+	import { ChevronDown, Loader2, Music2 } from '@lucide/svelte';
 	import type { LyricLine } from '$lib/types';
 	import Button from '$lib/components/ui/Button.svelte';
 
@@ -27,22 +27,16 @@
 		try {
 			const res = await fetch(`/api/lyrics/${trackId}?variant=original`);
 			if (!res.ok) throw new Error('Failed to fetch lyrics');
-
 			const data = await res.json();
-
 			if (data && Array.isArray(data.lines)) {
 				lines = data.lines;
 				isSynced = !!data.synced;
-
-				if (lines.length === 0) {
-					error = 'Lyrics not available';
-				}
+				if (lines.length === 0) error = 'Lyrics not available';
 			} else {
 				lines = [];
 				error = 'Lyrics not available';
 			}
 		} catch (e) {
-			console.error(e);
 			error = 'Lyrics not available';
 			lines = [];
 		} finally {
@@ -62,9 +56,7 @@
 
 	$effect(() => {
 		if (!lines.length || !isSynced || !player.currentTrack || loading) return;
-
 		const timeMs = player.currentTime * 1000;
-
 		let newIndex = -1;
 		for (let i = lines.length - 1; i >= 0; i--) {
 			if (lines[i].t <= timeMs) {
@@ -95,49 +87,40 @@
 			clearTimeout(scrollTimeout);
 			scrollTimeout = setTimeout(() => {
 				userScrolled = false;
-				if (activeLineIndex !== -1) {
-					scrollToActiveLine(activeLineIndex);
-				}
+				if (activeLineIndex !== -1) scrollToActiveLine(activeLineIndex);
 			}, 3000);
 		}
 	}
 </script>
 
 <div
-	class="fixed inset-0 z-50 flex flex-col bg-zinc-950/95 transition-all duration-300"
-	transition:fly={{ y: '100%', duration: 300 }}
+	class="fixed inset-0 z-[100] flex flex-col bg-black transition-all duration-300"
+	transition:fly={{ y: '100%', duration: 400 }}
 >
 	{#if player.currentTrack?.coverUrl}
-		<div class="pointer-events-none absolute inset-0 -z-10 overflow-hidden opacity-20">
-			<img src={player.currentTrack.coverUrl} alt="" class="h-full w-full object-cover blur-2xl" />
+		<div class="pointer-events-none absolute inset-0 -z-10 overflow-hidden opacity-30">
+			<img src={player.currentTrack.coverUrl} alt="" class="h-full w-full object-cover blur-[120px] scale-110" />
 		</div>
-		<div
-			class="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-black/40 via-zinc-950/80 to-zinc-950"
-		></div>
+		<div class="pointer-events-none absolute inset-0 -z-10 bg-black/60"></div>
 	{/if}
 
-	<div class="z-10 flex shrink-0 items-center justify-between px-6 py-6 md:px-12">
-		<div class="flex items-center gap-4">
-			<Button
-				onclick={onClose}
-				variant="glass"
-				size="icon"
-				class="rounded-full"
-				aria-label="Close Lyrics"
-			>
-				<ChevronDown class="h-6 w-6" />
-			</Button>
-			<div class="flex flex-col overflow-hidden">
-				<span class="text-xs font-bold tracking-wider text-white/60 uppercase">Now Playing</span>
-				<span class="max-w-[200px] truncate font-semibold text-white"
-					>{player.currentTrack?.title}</span
-				>
-			</div>
+	<header class="relative z-[110] flex shrink-0 items-center justify-between px-6 py-8 md:px-12">
+		<Button
+			onclick={onClose}
+			variant="glass"
+			size="icon"
+			class="rounded-full bg-white/5 hover:bg-white/10"
+		>
+			<ChevronDown class="h-8 w-8 text-white" />
+		</Button>
+		<div class="text-right">
+			<span class="block text-[10px] font-black tracking-[0.4em] text-white/20 uppercase">Now Playing</span>
+			<span class="block text-xs font-bold text-white/40">{player.currentTrack?.title}</span>
 		</div>
-	</div>
+	</header>
 
 	<div
-		class="no-scrollbar relative flex-1 overflow-y-auto px-6 py-10 text-center md:px-12"
+		class="no-scrollbar relative flex-1 overflow-y-auto px-6 py-[33dvh] text-center md:px-12"
 		onscroll={handleScroll}
 		bind:this={containerRef}
 	>
@@ -147,21 +130,20 @@
 			</div>
 		{:else if error || lines.length === 0}
 			<div class="flex h-full flex-col items-center justify-center gap-4 text-white/50">
-				<Music2 class="h-16 w-16 opacity-20" />
-				<p class="text-xl font-medium">{error || 'Lyrics not available for this track'}</p>
+				<Music2 class="h-16 w-16 opacity-10" />
+				<p class="text-xl font-medium tracking-tight">{error || 'Lyrics not available'}</p>
 			</div>
 		{:else}
-			<div class="flex flex-col gap-4 pb-[50vh] md:gap-6">
+			<div class="flex flex-col gap-14 pb-[50vh] md:gap-20">
 				{#each lines as line, i}
 					<button
 						id="lyric-line-{i}"
-						class="block w-full origin-center py-4 text-2xl font-bold transition-all duration-500 outline-none md:text-4xl
+						class="lyric-line block w-full origin-center py-2 text-center outline-none
                         {isSynced
 							? i === activeLineIndex
-								? 'scale-105 font-extrabold text-white opacity-100 blur-none drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]'
-								: 'scale-95 font-medium text-zinc-400 opacity-50 blur-[0.5px] hover:scale-100 hover:opacity-80 hover:blur-none'
-							: 'text-white opacity-90 hover:opacity-100'}
-                        "
+								? 'active-line text-white opacity-100'
+								: 'text-white/5 opacity-10 scale-[0.85] filter blur-[2px]'
+							: 'text-white/90 font-bold'}"
 						onclick={() => {
 							if (isSynced && line.t !== undefined && line.t !== -1) {
 								player.seek(line.t / 1000);
@@ -173,11 +155,7 @@
 					>
 						{#if line.tokens && line.tokens.length > 0}
 							{#each line.tokens as token}
-								{#if token.highlight}
-									<span class="text-accent drop-shadow-md">{token.text}</span>
-								{:else}
-									{token.text}
-								{/if}
+								<span class={token.highlight ? 'text-accent' : ''}>{token.text}</span>
 							{/each}
 						{:else}
 							{line.text}
@@ -190,11 +168,26 @@
 </div>
 
 <style>
-	.no-scrollbar::-webkit-scrollbar {
-		display: none;
+	.no-scrollbar::-webkit-scrollbar { display: none; }
+	.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+	button:focus { outline: none; }
+	.lyric-line {
+		transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+		will-change: transform, opacity;
+		font-weight: 900;
+		font-size: 2.25rem; /* Fallback */
 	}
-	.no-scrollbar {
-		-ms-overflow-style: none;
-		scrollbar-width: none;
+
+	@media (min-width: 768px) {
+		.lyric-line { font-size: 5rem; }
+	}
+
+	@media (min-width: 1280px) {
+		.lyric-line { font-size: 8rem; }
+	}
+
+	.active-line {
+		transform: scale(1.15);
+		text-shadow: 0 0 40px rgba(255, 255, 255, 0.2);
 	}
 </style>

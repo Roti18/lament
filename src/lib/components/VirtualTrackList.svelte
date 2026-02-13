@@ -57,7 +57,8 @@
 	.virtual-list-container {
 		overflow-y: auto;
 		height: 100%;
-		max-height: 600px;
+		max-height: 80vh;
+		min-height: 400px;
 	}
 
 	.virtual-list-spacer {
