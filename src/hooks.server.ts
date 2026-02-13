@@ -1,25 +1,14 @@
 import type { Handle } from '@sveltejs/kit';
-import * as auth from '$lib/server/auth';
 
 export const handle: Handle = async ({ event, resolve }) => {
-	const sessionToken = event.cookies.get(auth.sessionCookieName);
-
-	if (!sessionToken) {
-		event.locals.user = null;
-		event.locals.session = null;
-	} else {
-		const { session, user } = await auth.validateSessionToken(sessionToken);
-		if (session) {
-			auth.setSessionTokenCookie(event, sessionToken, session.expiresAt);
-		} else {
-			auth.deleteSessionTokenCookie(event);
-		}
-		event.locals.user = user;
-		event.locals.session = session;
-	}
+	// Auth system has been removed
+	event.locals.user = null;
+	event.locals.session = null;
 
 	const response = await resolve(event);
 
+	// Required for Google Auth popups if they were ever used, but safe to keep or remove.
+	// We'll keep it for general security compatibility.
 	response.headers.set('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
 
 	return response;
