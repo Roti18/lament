@@ -51,26 +51,6 @@ export interface PlaylistTrack {
 	track?: Track;
 }
 
-export interface User {
-	id: string;
-	google_id?: string;
-	username: string;
-	email: string;
-	name?: string;
-	displayName?: string;
-	avatar_url?: string;
-	avatarUrl?: string;
-	role: 'user' | 'admin';
-	created_at?: string;
-	bio?: string;
-	stats?: UserStats;
-}
-
-export interface UserStats {
-	playlistCount?: number;
-	followersCount?: number;
-	followingCount?: number;
-}
 
 export interface PlayerState {
 	currentTrack: Track | null;

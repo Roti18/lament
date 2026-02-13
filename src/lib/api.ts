@@ -1,4 +1,4 @@
-import type { Track, Album, Artist, Playlist, SearchResult, User, SongRequest, PlaylistTrack } from '$lib/types';
+import type { Track, Album, Artist, Playlist, SearchResult, SongRequest, PlaylistTrack } from '$lib/types';
 import { fetchWithCache, invalidateCache } from './cache/api.client';
 
 async function fetchInternal<T>(path: string, options: RequestInit = {}): Promise<T> {
@@ -35,27 +35,6 @@ export const clientApi = {
     search: (query: string) =>
         fetchWithCache<SearchResult>(`search_${query}`, () => fetchInternal<SearchResult>(`/search?q=${encodeURIComponent(query)}`)),
 
-    login: async (credentials: { login: string; password: string }) => {
-        const user = await fetchInternal<User>('/auth/login', { method: 'POST', body: JSON.stringify(credentials) });
-        invalidateCache('me');
-        return user;
-    },
-    googleAuth: async (token: string) => {
-        const user = await fetchInternal<User>('/auth/google', { method: 'POST', body: JSON.stringify({ token }) });
-        invalidateCache('me');
-        return user;
-    },
-    register: async (data: { username: string; email: string; password: string }) => {
-        const user = await fetchInternal<User>('/auth/register', { method: 'POST', body: JSON.stringify(data) });
-        invalidateCache('me');
-        return user;
-    },
-    logout: async () => {
-        await fetchInternal<void>('/auth/logout', { method: 'POST' });
-        invalidateCache('me');
-    },
-
-    getMe: () => fetchWithCache<User>('me', () => fetchInternal<User>('/users/me'), { ttl: 1000 * 60 * 30 }),
 
     getMyPlaylists: () => fetchWithCache<Playlist[]>('my_playlists', () => fetchInternal<Playlist[]>('/playlists/me')),
     getPlaylist: (id: string) => fetchWithCache<Playlist>(`playlist_${id}`, () => fetchInternal<Playlist>(`/playlists/${id}`)),
@@ -93,8 +72,10 @@ export const clientApi = {
     createRequest: async (data: { query: string; metadata?: Record<string, unknown> }) => {
         const res = await fetchInternal<SongRequest>('/requests', { method: 'POST', body: JSON.stringify(data) });
         invalidateCache('my_requests');
+        invalidateCache('all_requests');
         return res;
     },
+    getAllRequests: () => fetchWithCache<SongRequest[]>('all_requests', () => fetchInternal<SongRequest[]>('/requests')),
     getMyRequests: () => fetchWithCache<SongRequest[]>('my_requests', () => fetchInternal<SongRequest[]>('/requests/me')),
 
     recordPlay: async (trackId: string) => {
