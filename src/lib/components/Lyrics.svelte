@@ -172,18 +172,20 @@
 	.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 	button:focus { outline: none; }
 	.lyric-line {
-		transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+		transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
 		will-change: transform, opacity;
-		font-weight: 900;
-		font-size: 2.25rem; /* Fallback */
+		font-weight: 800;
+		font-size: 1.5rem;
+		line-height: 1.2;
+		letter-spacing: -0.02em;
 	}
 
 	@media (min-width: 768px) {
-		.lyric-line { font-size: 5rem; }
+		.lyric-line { font-size: 2.5rem; }
 	}
 
 	@media (min-width: 1280px) {
-		.lyric-line { font-size: 8rem; }
+		.lyric-line { font-size: 3.5rem; }
 	}
 
 	.active-line {
