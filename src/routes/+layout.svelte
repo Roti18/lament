@@ -6,26 +6,29 @@
 	import LoadingSpinner from '$lib/components/ui/LoadingSpinner.svelte';
 	import { navigating } from '$app/stores';
 	import { page } from '$app/state';
-	import { auth } from '$lib/stores/auth.svelte';
+	import { player } from '$lib/stores/player.svelte';
 
 	let { children } = $props();
 
+
+	// Update page title when track is playing
 	$effect(() => {
-		auth.init();
+		if (player.currentTrack && player.isPlaying) {
+			document.title = `${player.currentTrack.title} | Lament`;
+		} else if (player.currentTrack) {
+			document.title = `${player.currentTrack.title} (Paused) | Lament`;
+		} else {
+			document.title = 'Lament';
+		}
 	});
 
-	let isAuthPage = $derived(
-		page.url.pathname === '/login' ||
-			page.url.pathname === '/register' ||
-			page.url.pathname.includes('/login/') ||
-			page.url.pathname.includes('/register/')
-	);
+	let isAuthPage = false;
 
 	let isErrorPage = $derived(page.status >= 400);
 </script>
 
 {#if $navigating}
-	<LoadingSpinner fullScreen={true} size="lg" />
+	<div class="loading-bar"></div>
 {/if}
 
 <svelte:head>
@@ -41,9 +44,9 @@
 <main
 	class="min-h-screen {isAuthPage || isErrorPage
 		? ''
-		: 'pt-4 pb-[calc(var(--spacing-player-height-mobile)+var(--mobile-nav-bottom-total))] lg:pb-24 lg:pl-24'}"
+		: `pt-4 ${player.currentTrack ? 'pb-[calc(var(--spacing-player-height-mobile)+var(--mobile-nav-bottom-total))] lg:pb-32' : 'pb-[calc(var(--mobile-nav-bottom-total)+1rem)] lg:pb-8'} lg:pl-24`}"
 >
-	<div class="mx-auto {isAuthPage || isErrorPage ? '' : 'max-w-6xl px-4 lg:px-6'}">
+	<div class="mx-auto {isErrorPage ? '' : 'max-w-6xl px-4 lg:px-6'}">
 		{@render children()}
 	</div>
 </main>

@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { auth } from '$lib/stores/auth.svelte';
 	import { clientApi } from '$lib/api';
 	import { goto } from '$app/navigation';
 	import { Plus, Music2, Edit, Trash2 } from 'lucide-svelte';
@@ -21,13 +20,7 @@
 	let submitting = $state(false);
 
 	$effect(() => {
-		if (auth.isInitialized) {
-			if (!auth.user) {
-				goto('/login');
-			} else {
-				loadPlaylists();
-			}
-		}
+		loadPlaylists();
 	});
 
 	async function loadPlaylists() {
