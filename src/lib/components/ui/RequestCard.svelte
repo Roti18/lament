@@ -44,7 +44,7 @@
 			<div class="mt-1 flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-text-muted">
 				<span>{metadata.genre || 'General'}</span>
 				<span class="h-1 w-1 rounded-full bg-white/5"></span>
-				<span>{new Date(request.created_at).toLocaleDateString()}</span>
+				<span>{new Date(request.created_at).toLocaleDateString('en-GB')}</span>
 			</div>
 		</div>
 
