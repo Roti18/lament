@@ -76,13 +76,19 @@ export async function proxyRequest(options: ProxyOptions): Promise<Response> {
 
         const response = await fetch(targetUrl, fetchOptions);
 
+        // Read the body as ArrayBuffer to avoid streaming issues in serverless
+        const bodyBuffer = await response.arrayBuffer();
+
         const responseHeaders = new Headers(response.headers);
+        
+        // Remove headers that should be handled by the proxy or could conflict
         responseHeaders.delete('access-control-allow-origin');
-
-        // Remove security-sensitive headers that might conflict
         responseHeaders.delete('content-security-policy');
+        responseHeaders.delete('content-length');
+        responseHeaders.delete('content-encoding');
+        responseHeaders.delete('transfer-encoding');
 
-        return new Response(response.body, {
+        return new Response(bodyBuffer, {
             status: response.status,
             statusText: response.statusText,
             headers: responseHeaders
