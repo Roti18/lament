@@ -63,7 +63,7 @@
 	<title>Requests | Lament</title>
 </svelte:head>
 
-<div class="mx-auto max-w-4xl px-6 py-12 pb-32">
+<div class="py-6">
 	<!-- Restored Header Size -->
 	<header class="mb-10 flex items-center justify-between">
 		<div>
